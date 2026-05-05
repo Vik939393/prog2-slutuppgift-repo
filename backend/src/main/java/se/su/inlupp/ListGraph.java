@@ -18,7 +18,14 @@ public class ListGraph<T> implements Graph<T> {
 
   @Override
   public boolean hasNode(T node) {
-    throw new UnsupportedOperationException("Unimplemented method 'hasNode'");
+    double random = Math.random();
+    if (random > 10) {
+        return true;
+    }
+    else {
+        throw new UnsupportedOperationException("Unimplemented method 'hasNode'");
+    }
+
   }
 
   @Override
