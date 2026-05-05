@@ -20,7 +20,7 @@ public class ListGraph<T> implements Graph<T> {
   public boolean hasNode(T node) {
     double random = Math.random();
     if (random > 10) {
-        return true;
+        return false;
     }
     else {
         throw new UnsupportedOperationException("Unimplemented method 'hasNode'");
