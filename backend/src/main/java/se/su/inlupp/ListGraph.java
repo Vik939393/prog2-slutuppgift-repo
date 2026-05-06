@@ -1,21 +1,44 @@
 package se.su.inlupp;
 
-import org.w3c.dom.Node;
-
 import java.util.*;
 
 public class ListGraph<T> implements Graph<T> {
 
-    private final Map<Node, Set<Edge>> nodesWithEdges = new HashMap<>();
+    private final Map<T, Set<Edge>> nodesWithEdges = new HashMap<>();
 
     @Override
     public void add(T node) {
-
+        nodesWithEdges.putIfAbsent(node, new HashSet<>());
     }
 
     @Override
     public void remove(T node) {
-        throw new UnsupportedOperationException("Unimplemented method 'remove'");
+        if (nodesWithEdges.containsKey(node)) {
+            /*Set<Edge> setOfEdges = nodesWithEdges.get(node);
+            nodesWithEdges.remove(node);
+
+            for (T key : nodesWithEdges.keySet()) {
+                for (Edge e : setOfEdges) {
+                    if (nodesWithEdges.get(key).contains(e)) {
+                       nodesWithEdges.get(key).remove(e);
+                    }
+                }
+            }*/
+            //Du vill kolla om en kants destination är den nod du håller på att ta bort.
+            nodesWithEdges.remove(node); //Tar bort åt ett håll
+
+            for (T key : nodesWithEdges.keySet()) {
+                Set<Edge> toRemove = new HashSet<>();
+                for (Edge e : nodesWithEdges.get(key)) {
+                    if (e.getDestination().equals(node)) {
+                        toRemove.add(e);
+                    }
+                }
+                nodesWithEdges.get(key).removeAll(toRemove);
+            }
+        } else{
+            throw new NoSuchElementException();
+        }
     }
 
     @Override
@@ -63,5 +86,6 @@ public class ListGraph<T> implements Graph<T> {
     public Iterator<T> iterator() {
         throw new UnsupportedOperationException("Unimplemented method 'iterator'");
     }
+
 }
 
