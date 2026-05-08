@@ -18,7 +18,7 @@ public class ListGraph<T> implements Graph<T> {
       for (T n : nodesWithEdges.keySet()) {
         nodesWithEdges.get(n).remove(node);
       }
-      Set<Edge> viktor = nodesWithEdges.remove(node);
+      nodesWithEdges.remove(node);
     } else {
       throw new NoSuchElementException();
     }
