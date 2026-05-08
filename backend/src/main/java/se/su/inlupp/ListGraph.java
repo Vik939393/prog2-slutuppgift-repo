@@ -8,20 +8,21 @@ public class ListGraph<T> implements Graph<T> {
 
     private final Map<T, Set<Edge<T>>> nodesWithEdges = new HashMap<>();
 
-  @Override
-  public void add(T node) {
-    nodesWithEdges.putIfAbsent(node, new HashSet<Edge>());
-  }
+    @Override
+    public void add(T node) {
+        nodesWithEdges.putIfAbsent(node, new HashSet<>());
+    }
 
-  @Override
-  public void remove(T node) {
-    if (nodesWithEdges.containsKey(node)) {
-      for (T n : nodesWithEdges.keySet()) {
-        nodesWithEdges.get(n).remove(node);
-      }
-      Set<Edge> viktor = nodesWithEdges.remove(node);
-    } else {
-      throw new NoSuchElementException();
+    @Override
+    public void remove(T node) {
+        if (nodesWithEdges.containsKey(node)) {
+            for (T n : nodesWithEdges.keySet()) {
+                nodesWithEdges.get(n).remove(node);
+            }
+            nodesWithEdges.remove(node);
+        } else {
+            throw new NoSuchElementException();
+        }
     }
 
     @Override
