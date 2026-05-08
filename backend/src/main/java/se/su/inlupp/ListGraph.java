@@ -4,7 +4,7 @@ import java.util.*;
 
 public class ListGraph<T> implements Graph<T> {
 
-    private final Map<T, Set<Edge>> nodesWithEdges = new HashMap<>();
+    private final Map<T, Set<Edge<T>>> nodesWithEdges = new HashMap<>();
 
     @Override
     public void add(T node) {
@@ -14,19 +14,7 @@ public class ListGraph<T> implements Graph<T> {
     @Override
     public void remove(T node) {
         if (nodesWithEdges.containsKey(node)) {
-            /*Set<Edge> setOfEdges = nodesWithEdges.get(node);
             nodesWithEdges.remove(node);
-
-            for (T key : nodesWithEdges.keySet()) {
-                for (Edge e : setOfEdges) {
-                    if (nodesWithEdges.get(key).contains(e)) {
-                       nodesWithEdges.get(key).remove(e);
-                    }
-                }
-            }*/
-            //Du vill kolla om en kants destination är den nod du håller på att ta bort.
-            nodesWithEdges.remove(node); //Tar bort åt ett håll
-
             for (T key : nodesWithEdges.keySet()) {
                 Set<Edge> toRemove = new HashSet<>();
                 for (Edge e : nodesWithEdges.get(key)) {
@@ -43,18 +31,33 @@ public class ListGraph<T> implements Graph<T> {
 
     @Override
     public boolean hasNode(T node) {
-        double random = Math.random();
-        if (random > 10) {
-            return false;
-        } else {
-            throw new UnsupportedOperationException("Unimplemented method 'hasNode'");
-        }
-
+        return nodesWithEdges.containsKey(node);
     }
 
     @Override
     public void connect(T node1, T node2, String name, int weight) {
-        throw new UnsupportedOperationException("Unimplemented method 'connect'");
+        if (nodesWithEdges.containsKey(node1) && nodesWithEdges.containsKey(node2)) {
+            if (weight < 0) {
+                throw new IllegalArgumentException();
+            }
+            for (Edge e : nodesWithEdges.get(node1)) {
+                if (e.getDestination().equals(node2)) {
+                    throw new IllegalStateException();
+                }
+            }
+            for (Edge e : nodesWithEdges.get(node2)) {
+                if (e.getDestination().equals(node1)) {
+                    throw new IllegalStateException();
+                }
+            }
+            Set<Edge<T>> oneEdges = nodesWithEdges.get(node1);
+            Set<Edge<T>> twoEdges = nodesWithEdges.get(node2);
+
+            oneEdges.add(new EdgeImpl<T>(node2, name, weight));
+            twoEdges.add(new EdgeImpl<T>(node1, name, weight));
+        } else {
+            throw new NoSuchElementException();
+        }
     }
 
     @Override
