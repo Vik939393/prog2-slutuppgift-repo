@@ -140,7 +140,7 @@ public class ListGraph<T> implements Graph<T> {
 
     @Override
     public Iterator<T> iterator() {
-        throw new UnsupportedOperationException("Unimplemented method 'iterator'");
+        return nodesWithEdges.keySet().iterator();
     }
 }
 
