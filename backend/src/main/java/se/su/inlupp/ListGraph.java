@@ -58,11 +58,18 @@ public class ListGraph<T> implements Graph<T> {
 
     @Override
     public void disconnect(T node1, T node2) {
+        if(nodesWithEdges.containsKey(node1) && nodesWithEdges.containsKey(node2)){
+            if(nodesWithEdges.get(node1).contains(node2))
+        }else{
+            throw new NoSuchElementException();
+
+        }
         throw new UnsupportedOperationException("Unimplemented method 'disconnect'");
     }
 
     @Override
     public void setConnectionWeight(T node1, T node2, int weight) {
+
         throw new UnsupportedOperationException("Unimplemented method 'setConnectionWeight'");
     }
 
