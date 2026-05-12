@@ -146,5 +146,8 @@ public class ListGraph<T> implements Graph<T> {
     public Iterator<T> iterator() {
         return nodesWithEdges.keySet().iterator();
     }
+    public String toString(){
+        return ""+ nodesWithEdges;
+    }
 }
 
