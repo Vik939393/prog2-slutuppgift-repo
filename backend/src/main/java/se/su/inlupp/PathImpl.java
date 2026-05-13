@@ -46,7 +46,7 @@ public class PathImpl <T> implements Path<T>{
 
     @Override
     public List<T> getNodes() {
-        return List.of();
+        return Collections.unmodifiableList(nodes);
     }
 
     @Override
