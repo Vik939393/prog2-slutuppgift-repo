@@ -33,14 +33,10 @@ public class BFSPathFinder<T> implements PathFinder<T> {
       T current = to;
       while (current != null && !current.equals(from)) {
         T previous = connections.get(current);
-        Edge<T> edge = graph.getEdgeBetween(current, previous);
+        Edge<T> edge = graph.getEdgeBetween(previous, current);
         path.addFirst(edge);
-
         current = previous;
       }
-      T previous = path.getLast().getDestination();
-      Edge<T> edge = graph.getEdgeBetween(previous, to);
-      path.addLast(edge);
 
       return new PathImpl<>(from, path);
     }

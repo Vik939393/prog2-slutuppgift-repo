@@ -5,12 +5,12 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
-public class PathImpl <T> implements Path<T>{
+public final class PathImpl <T> implements Path<T>{
     private int totalWeight;
     private T end;
     private T start;
-    private List<Edge<T>> edges;
-    private List<T> nodes;
+    private final List<Edge<T>> edges;
+    private final List<T> nodes;
 
     public PathImpl (T start, List<Edge<T>> edges ){
         this.totalWeight = totalWeight;
@@ -41,12 +41,21 @@ public class PathImpl <T> implements Path<T>{
 
     @Override
     public List<Edge<T>> getEdges() {
-        return Collections.unmodifiableList(edges);
+
+        return edges;
     }
 
     @Override
     public List<T> getNodes() {
-        return Collections.unmodifiableList(nodes);
+        List<T> nodes = new LinkedList<>();
+        nodes.add(start);
+        for (Edge<T> e : edges){
+            T node = e.getDestination();
+            nodes.add(node);
+
+        }
+
+        return nodes;
     }
 
     @Override
