@@ -89,7 +89,6 @@ public class ListGraph<T> implements Graph<T> {
 
     @Override
     public void setConnectionWeight(T node1, T node2, int weight) {
-
         if (hasNode(node1) && hasNode(node2)) {
             if (weight < 0) {
                 throw new IllegalArgumentException();
@@ -140,7 +139,7 @@ public class ListGraph<T> implements Graph<T> {
 
     @Override
     public Iterator<T> iterator() {
-        throw new UnsupportedOperationException("Unimplemented method 'iterator'");
+        return nodesWithEdges.keySet().iterator();
     }
 }
 
