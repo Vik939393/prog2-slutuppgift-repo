@@ -1,0 +1,13 @@
+
+connect (Graph<T> graph, T to, T from, Map<T, T> connections)
+
+Main() {
+
+ListGraph() listGraphImplementation = new ListGraph();
+
+
+connect(listGraphImplementation, Stockholm, Göteborg, new HasMap())
+
+PathImpl.end
+
+}

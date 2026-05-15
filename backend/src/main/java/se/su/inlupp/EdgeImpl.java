@@ -19,6 +19,8 @@ public class EdgeImpl<T> implements Edge<T> {
 
     @Override
     public void setWeight(int weight) {
+        if (weight < 0)
+            throw new IllegalArgumentException();
         this.weight = weight;
     }
 
@@ -33,6 +35,6 @@ public class EdgeImpl<T> implements Edge<T> {
     }
 
     public String toString() {
-        return name + ": \n" + weight + "\ndestination: " + destination;
+        return "till " + destination + " med " + name + " tar " + weight;
     }
 }
