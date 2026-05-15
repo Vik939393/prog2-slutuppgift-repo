@@ -23,11 +23,9 @@ public class DFSPathFinder<T> implements PathFinder<T> {
         current = previous;
       }
 
-
       return new PathImpl<>(from, path);
     }
       return null;
-
   }
 
   private void connect (Graph<T> graph, T to, T from, Map<T, T> connections){

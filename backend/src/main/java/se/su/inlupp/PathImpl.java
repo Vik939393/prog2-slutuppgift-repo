@@ -13,13 +13,13 @@ public final class PathImpl <T> implements Path<T>{
     private final List<T> nodes;
 
     public PathImpl (T start, List<Edge<T>> edges ){
-        this.totalWeight = totalWeight;
-        this.end = end;
+        this.totalWeight = getTotalWeight();
+        this.end = edges.getLast().getDestination();
         this.start = start;
         this.edges = edges;
         this.nodes = new LinkedList<>();
-
     }
+
     @Override
     public T getStart() {
         return start;
@@ -28,15 +28,20 @@ public final class PathImpl <T> implements Path<T>{
     @Override
     public T getEnd() {
 
-        return edges.getLast().getDestination();
+        return end;
     }
 
     @Override
     public int getTotalWeight() {
-        for(Edge<T> e : edges)
-            totalWeight += e.getWeight();
-
+        if(edges != null) {
+            for(Edge<T> e : edges){
+                totalWeight += e.getWeight();
+            }
+        } else {
+            return 0;
+        }
         return totalWeight;
+
     }
 
     @Override
@@ -65,4 +70,5 @@ public final class PathImpl <T> implements Path<T>{
     public String toString (){
         return "" + getEnd() + getStart() + getTotalWeight();
     }
+
 }
