@@ -24,8 +24,7 @@ public class Gui extends Application {
   }
 
   public static void main(String[] args) {
+
     launch(args);
-    Gui hej = new Gui();
-    hej.start(new Stage());
   }
 }

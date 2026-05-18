@@ -10,14 +10,14 @@ public final class PathImpl <T> implements Path<T>{
     private T end;
     private T start;
     private final List<Edge<T>> edges;
-    private final List<T> nodes;
+   // private final List<T> nodes;
 
     public PathImpl (T start, List<Edge<T>> edges ){
         this.totalWeight = getTotalWeight();
         this.end = edges.getLast().getDestination();
         this.start = start;
         this.edges = edges;
-        this.nodes = new LinkedList<>();
+        //this.nodes = new LinkedList<>();
     }
 
     @Override
