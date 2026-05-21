@@ -10,6 +10,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
@@ -67,6 +68,14 @@ public class Gui extends Application {
       bottomBar.setAlignment(Pos.CENTER);
       root.setTop(topBar);
       root.setBottom(bottomBar);
+
+      Pane canvas = new Pane();
+      root.setCenter(canvas);
+
+      canvas.setOnMouseClicked((event) -> {
+          canvas.getChildren().add(new LocationNodeGui(100,100));
+      });
+
       Scene scene = new Scene(root, 640, 480);
       stage.setScene(scene);
       stage.show();
