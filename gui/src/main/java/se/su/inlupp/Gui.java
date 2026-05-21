@@ -9,6 +9,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
@@ -97,6 +98,14 @@ public class Gui extends Application {
       bottomBar.setAlignment(Pos.CENTER);
       root.setTop(topV);
       root.setBottom(bottomBar);
+
+      Pane canvas = new Pane();
+      root.setCenter(canvas);
+
+      canvas.setOnMouseClicked((event) -> {
+          canvas.getChildren().add(new LocationNodeGui(100,100));
+      });
+
       Scene scene = new Scene(root, 640, 480);
       stage.setScene(scene);
       stage.setOnCloseRequest(new ExitHandler());
