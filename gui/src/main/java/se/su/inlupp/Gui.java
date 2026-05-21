@@ -1,5 +1,6 @@
 package se.su.inlupp;
 
+import com.sun.javafx.scene.EnteredExitedHandler;
 import javafx.application.Application;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -98,6 +99,7 @@ public class Gui extends Application {
       root.setBottom(bottomBar);
       Scene scene = new Scene(root, 640, 480);
       stage.setScene(scene);
+      stage.setOnCloseRequest(new ExitHandler());
       stage.show();
   }
   private class OpenHandler implements EventHandler<ActionEvent>{
@@ -124,7 +126,7 @@ public class Gui extends Application {
 
       }
   }
-  private class exitHandler implements EventHandler<WindowEvent>{
+  private class ExitHandler implements EventHandler<WindowEvent>{
 
         @Override
         public void handle(WindowEvent event) {
