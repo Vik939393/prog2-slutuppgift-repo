@@ -48,13 +48,23 @@ public class Gui extends Application {
       Menu start = new Menu("Start");
       menuBar.getMenus().add(start);
       //MenuItem createNew = new MenuItem("New.. ");
+
       MenuItem open = new MenuItem("Open");
-
       open.setOnAction(new OpenHandler());
-      MenuItem save = new MenuItem("Save");
 
+      MenuItem save = new MenuItem("Save");
       save.setOnAction(new SaveHandler());
+
       MenuItem exit = new MenuItem("Exit");
+      exit.setOnAction(new EventHandler<ActionEvent>() {
+          @Override
+          public void handle(ActionEvent event) {
+              if(confirm()) {
+                  stage.close();
+              }
+          }
+      });
+
       start.getItems().addAll(open,save,exit);
 
 
@@ -62,13 +72,11 @@ public class Gui extends Application {
 
 
       Button newLocation = new Button("Add new location");
-      Button openImage = new Button("Add image");
-      //Button saveButton = new Button("Save");
-      Button exitButton = new Button("Exit");
+      Button BFS = new Button("Find shortest path (BFS)");
+      Button DFS = new Button("Find existing path (DFS");
       TextField textField = new TextField();
       Button enterButton = new Button("Enter");
       Label resultLabel = new Label();
-      //resultLabel.prefWidth(100);
       root.setBottom(resultLabel);
 
 
@@ -77,8 +85,8 @@ public class Gui extends Application {
       topBar.getChildren().addAll(
 
               newLocation,
-              openImage,
-              exitButton
+              BFS,
+              DFS
 
       );
       bottomBar.getChildren().addAll(
@@ -121,8 +129,6 @@ public class Gui extends Application {
           File openFile = fileChooser.showOpenDialog(stage);
 
           Image background = new Image(openFile.toURI().toString());
-
-
           ImageView backgroundView = new ImageView(background);
 
           backgroundView.fitHeightProperty().bind(canvas.heightProperty());
@@ -134,6 +140,7 @@ public class Gui extends Application {
 
       }
   }
+
   private class SaveHandler implements EventHandler<ActionEvent>{
 
       @Override
@@ -149,19 +156,23 @@ public class Gui extends Application {
 
       }
   }
+
   private class ExitHandler implements EventHandler<WindowEvent>{
 
         @Override
         public void handle(WindowEvent event) {
-            Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-            alert.setContentText("Are you sure you wanna close?!");
-
-            Optional<ButtonType> clicked = alert.showAndWait();
-            if(clicked.isPresent() && clicked.get().equals(ButtonType.CANCEL)){
+            if(!confirm()){
                 event.consume();
             }
 
         }
+    }
+    private boolean confirm(){
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        alert.setContentText("Are you sure you wanna close?!");
+
+        Optional<ButtonType> clicked = alert.showAndWait();
+        return clicked.isPresent() && clicked.get().equals(ButtonType.OK);
     }
 
 
