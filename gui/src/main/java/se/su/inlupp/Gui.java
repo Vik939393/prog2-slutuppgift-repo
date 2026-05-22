@@ -94,9 +94,10 @@ public class Gui extends Application {
       root.setCenter(centerCanvas);
 
         newLocation.setOnAction(event -> {
-            TextInputDialog createNode = new TextInputDialog();
+            Dialog<ButtonType> createNode = new Dialog();
             createNode.setTitle("New location");
-            createNode.setHeaderText("Enter location name:");
+            TextField nameField = new TextField();
+            nameField.setPromptText("Name of location:");
             Optional<String> result = createNode.showAndWait();
             if (result.isPresent()) {
                 String name = result.get();

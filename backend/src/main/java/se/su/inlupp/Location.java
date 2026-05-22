@@ -3,6 +3,7 @@ package se.su.inlupp;
 public class Location {
     private String name;
     private LocationType type;
+    private int weight;
 
     public Location(String name, LocationType type){
         this.name = name;
@@ -15,27 +16,25 @@ public class Location {
 
     public String getType() {
         switch (type) {
-            case FOREST:
-                return "Forest";
-            case NATIONAL_PARK:
-                return "National park";
-            case PARK:
-                return "Park";
-            case FARM:
-                return "Farm";
+            case SMALL_AMOUNT_BERRIES:
+                weight = 1;
+                return "Small amount of berries in this location.";
+            case MIDDLE_AMOUNT_BERRIES:
+                weight = 2;
+                return "Medium amount of berries in this location";
+            case BIG_AMOUNT_BERRIES:
+                weight = 3;
+                return "Lots of berries in this location.";
             default:
                 return "Error";
         }
     }
 
     public String toString() {
-        return "Location: " + name + " - Location type: " + getType();
+        return "Location: " + name + " - " + getType();
     }
     
     public static void main(String[] args) {
-        Location slottsparken = new Location("Slottsparken", LocationType.PARK);
-        Location yellowstone = new Location("Yellowstone", LocationType.NATIONAL_PARK);
-        System.out.println(slottsparken);
-        System.out.println(yellowstone);
+
     }
 }
