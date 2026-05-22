@@ -121,7 +121,9 @@ public class Gui extends Application {
       root.setCenter(canvas);
 
       canvas.setOnMouseClicked((event) -> {
-          canvas.getChildren().add(new LocationNodeGui(100,100));
+          double x = event.getX();
+          double y = event.getY();
+          canvas.getChildren().add(new LocationNodeGui(x,y));
       });
 
       scene = new Scene(root, 640, 480);
