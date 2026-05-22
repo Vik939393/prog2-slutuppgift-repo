@@ -89,7 +89,26 @@ public class Gui extends Application {
             resultLabel.setText("Hej " + textField.getText());
           }
       });*/
-        newLocation.setOnAction(event -> {topBar.getChildren().addAll(textField, enterButton);});
+
+      Pane centerCanvas = new Pane();
+      root.setCenter(centerCanvas);
+
+        newLocation.setOnAction(event -> {
+            TextInputDialog createNode = new TextInputDialog();
+            createNode.setTitle("New location");
+            createNode.setHeaderText("Enter location name:");
+            Optional<String> result = createNode.showAndWait();
+            if (result.isPresent()) {
+                String name = result.get();
+                centerCanvas.setOnMouseClicked((event2) -> {
+                    if (event2.getTarget() == centerCanvas) {
+                        centerCanvas.getChildren().add(new LocationNodeGui(event2.getX(),event2.getY(), name));
+                        centerCanvas.setOnMouseClicked(null);
+                    }
+
+                });
+            }
+        });
 
 
 
@@ -98,12 +117,9 @@ public class Gui extends Application {
       root.setTop(topV);
       root.setBottom(bottomBar);
 
-      Pane canvas = new Pane();
-      root.setCenter(canvas);
 
-      canvas.setOnMouseClicked((event) -> {
-          canvas.getChildren().add(new LocationNodeGui(100,100));
-      });
+
+
 
       Scene scene = new Scene(root, 640, 480);
       stage.setScene(scene);

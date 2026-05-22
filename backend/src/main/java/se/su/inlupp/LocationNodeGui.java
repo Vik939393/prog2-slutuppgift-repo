@@ -1,13 +1,20 @@
 package se.su.inlupp;
 
+import javafx.scene.control.Alert;
+import javafx.scene.control.ButtonType;
+import javafx.scene.input.MouseButton;
 import javafx.scene.layout.Pane;
 import javafx.scene.shape.Circle;
 import javafx.scene.paint.Color;
 
+import java.util.Optional;
+
 public class LocationNodeGui extends Pane {
     double startX, startY;
+    String name;
 
-    public LocationNodeGui(double x, double y) {
+    public LocationNodeGui(double x, double y, String name) {
+        this.name = name;
         relocate(x, y);
         Circle circle = new Circle(20, 20, 20);
         circle.setFill(Color.GREEN);
@@ -23,6 +30,18 @@ public class LocationNodeGui extends Pane {
             double newX = getLayoutX() + event.getX() - startX;
             double newY = getLayoutY() + event.getY() - startY;
             relocate(newX, newY);
+        });
+
+        setOnMouseClicked(event -> {
+            if (event.getButton() == MouseButton.SECONDARY) {
+                Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+                alert.setContentText("Delete this location?");
+                Optional<ButtonType> result = alert.showAndWait();
+                if (result.isPresent() && result.get() == ButtonType.OK) {
+                    Pane parent = (Pane) getParent(); //För att kunna använda getChildren() måste den förstå att den är en Pane
+                    parent.getChildren().remove(this);
+                }
+            }
         });
 
 
