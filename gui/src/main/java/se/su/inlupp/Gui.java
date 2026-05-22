@@ -17,10 +17,7 @@ import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.ObjectOutputStream;
+import java.io.*;
 import java.util.Optional;
 
 public class Gui extends Application {
@@ -137,9 +134,10 @@ public class Gui extends Application {
 
       @Override
       public void handle(ActionEvent event) {
-          confirm();
-          canvas.getChildren().clear();
-          graph = new ListGraph<>();
+          if(confirm()) {
+              canvas.getChildren().clear();
+              graph = new ListGraph<>();
+          }
       }
   }
   private class OpenBackgroundHandler implements EventHandler<ActionEvent>{
@@ -198,6 +196,21 @@ public class Gui extends Application {
       public void handle(ActionEvent event) {
           fileChooser.setInitialDirectory(new File("."));
           File openFile = fileChooser.showOpenDialog(stage);
+          try{
+              FileReader fileReader = new FileReader((openFile));
+              BufferedReader reader = new BufferedReader(fileReader);
+              String line;
+              while(((line = reader.readLine()) != null)){
+                  System.out.println(line);
+              }
+
+              reader.close();
+          } catch (FileNotFoundException e) {
+              throw new RuntimeException(e);
+          } catch (IOException e) {
+              throw new RuntimeException(e);
+          }
+
 
       }
   }
@@ -214,7 +227,7 @@ public class Gui extends Application {
     }
     private boolean confirm(){
         Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-        alert.setContentText("Are you sure you wanna close?!");
+        alert.setContentText("You have unsaved changes, do you want to continue?");
 
         Optional<ButtonType> clicked = alert.showAndWait();
         return clicked.isPresent() && clicked.get().equals(ButtonType.OK);
