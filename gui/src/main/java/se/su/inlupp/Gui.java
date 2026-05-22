@@ -7,6 +7,8 @@ import javafx.event.EventHandler;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
@@ -25,9 +27,11 @@ public class Gui extends Application {
 
     private FileChooser fileChooser = new FileChooser();
     private Stage stage;
+    private Pane canvas;
+    private Scene scene;
 
   public void start(Stage stage) {
-      stage = stage;
+      this.stage = stage;
       stage.setTitle("BERRYS AND SHROOOOMS");
       Graph<String> graph = new ListGraph<String>();
 
@@ -71,13 +75,10 @@ public class Gui extends Application {
 
 
       topBar.getChildren().addAll(
-              //topV,
-              //saveButton,
+
               newLocation,
               openImage,
               exitButton
-              //textField,
-              //enterButton
 
       );
       bottomBar.getChildren().addAll(
@@ -98,15 +99,16 @@ public class Gui extends Application {
       bottomBar.setAlignment(Pos.CENTER);
       root.setTop(topV);
       root.setBottom(bottomBar);
+      canvas = new Pane();
 
-      Pane canvas = new Pane();
       root.setCenter(canvas);
 
       canvas.setOnMouseClicked((event) -> {
           canvas.getChildren().add(new LocationNodeGui(100,100));
       });
 
-      Scene scene = new Scene(root, 640, 480);
+      scene = new Scene(root, 640, 480);
+
       stage.setScene(scene);
       stage.setOnCloseRequest(new ExitHandler());
       stage.show();
@@ -117,7 +119,19 @@ public class Gui extends Application {
       public void handle(ActionEvent event) {
           fileChooser.setInitialDirectory(new File("."));
           File openFile = fileChooser.showOpenDialog(stage);
-          System.out.println(openFile);
+
+          Image background = new Image(openFile.toURI().toString());
+
+
+          ImageView backgroundView = new ImageView(background);
+
+          backgroundView.fitHeightProperty().bind(canvas.heightProperty());
+          backgroundView.fitWidthProperty().bind(canvas.widthProperty());
+
+          canvas.getChildren().addAll(backgroundView);
+
+
+
       }
   }
   private class SaveHandler implements EventHandler<ActionEvent>{
