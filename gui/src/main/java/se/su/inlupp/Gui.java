@@ -6,6 +6,9 @@ import javafx.event.EventHandler;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+import javafx.scene.input.MouseButton;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
@@ -14,21 +17,23 @@ import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.ObjectOutputStream;
+import java.io.*;
 import java.util.Optional;
 
 public class Gui extends Application {
 
     private FileChooser fileChooser = new FileChooser();
     private Stage stage;
+    private Pane canvas;
+    private Scene scene;
+    private String locationName;
+    private Graph<String> graph;
+    private boolean locationAdded;
 
   public void start(Stage stage) {
-      stage = stage;
+      this.stage = stage;
       stage.setTitle("BERRYS AND SHROOOOMS");
-      Graph<String> graph = new ListGraph<String>();
+      graph = new ListGraph<String>();
 
 
       BorderPane root = new BorderPane();
@@ -42,24 +47,44 @@ public class Gui extends Application {
 
       Menu start = new Menu("Start");
       menuBar.getMenus().add(start);
-      //MenuItem createNew = new MenuItem("New.. ");
+
+      MenuItem createNew = new MenuItem("New");
+      createNew.setOnAction(new NewHandler());
+
+
       MenuItem open = new MenuItem("Open");
 
       open.setOnAction(new OpenHandler());
+
       MenuItem save = new MenuItem("Save");
 
       save.setOnAction(new SaveHandler());
+
       MenuItem exit = new MenuItem("Exit");
-      start.getItems().addAll(open,save,exit);
+      exit.setOnAction(new EventHandler<ActionEvent>() {
+          @Override
+          public void handle(ActionEvent event) {
+              if(confirm()) {
+                  stage.close();
+              }
+          }
+      });
+
+      start.getItems().addAll(createNew, open,save,exit);
 
 
       VBox topV = new VBox(menuBar, topBar);
 
 
       Button newLocation = new Button("Add new location");
-      Button openImage = new Button("Add image");
-      //Button saveButton = new Button("Save");
-      Button exitButton = new Button("Exit");
+
+      Button BFS = new Button("Find shortest path (BFS)");
+
+      Button DFS = new Button("Find existing path (DFS");
+
+      Button background = new Button("Add new background");
+      background.setOnAction(new OpenBackgroundHandler());
+
       TextField textField = new TextField();
       Button enterButton = new Button("Enter");
       Label resultLabel = new Label();
@@ -70,46 +95,21 @@ public class Gui extends Application {
 
 
       topBar.getChildren().addAll(
-              //topV,
-              //saveButton,
+
               newLocation,
-              openImage,
-              exitButton
-              //textField,
-              //enterButton
+              BFS,
+              DFS,
+              background
 
       );
       bottomBar.getChildren().addAll(
               resultLabel
 
       );
-      /*searchButton.setOnAction(new EventHandler<ActionEvent>() {
-          @Override
-          public void handle(ActionEvent event) {
-            resultLabel.setText("Hej " + textField.getText());
-          }
-      });*/
 
       Pane centerCanvas = new Pane();
       root.setCenter(centerCanvas);
 
-        newLocation.setOnAction(event -> {
-            Dialog<ButtonType> createNode = new Dialog();
-            createNode.setTitle("New location");
-            TextField nameField = new TextField();
-            nameField.setPromptText("Name of location:");
-            Optional<String> result = createNode.showAndWait();
-            if (result.isPresent()) {
-                String name = result.get();
-                centerCanvas.setOnMouseClicked((event2) -> {
-                    if (event2.getTarget() == centerCanvas) {
-                        centerCanvas.getChildren().add(new LocationNodeGui(event2.getX(),event2.getY(), name));
-                        centerCanvas.setOnMouseClicked(null);
-                    }
-
-                });
-            }
-        });
 
 
 
@@ -117,24 +117,90 @@ public class Gui extends Application {
       bottomBar.setAlignment(Pos.CENTER);
       root.setTop(topV);
       root.setBottom(bottomBar);
+      canvas = new Pane();
+
+      root.setCenter(canvas);
 
 
+      newLocation.setOnAction(event -> {
+          locationAdded = true;
+          TextInputDialog createNode = new TextInputDialog();
+          createNode.setTitle("New location");
+          createNode.setHeaderText("Enter location name:");
+          Optional<String> result = createNode.showAndWait();
+          if(result.isPresent()){
+              locationName = result.get();
+          }
 
+              });
 
+      canvas.setOnMouseClicked((newEvent) -> {
 
-      Scene scene = new Scene(root, 640, 480);
+          if (locationAdded && newEvent.getTarget() == canvas && newEvent.getButton() == MouseButton.PRIMARY) {
+
+              double x = newEvent.getX();
+              double y = newEvent.getY();
+              canvas.getChildren().add(new LocationNodeGui(x, y, locationName));
+              newEvent.consume();
+              locationAdded = false;
+          }
+      });
+
+      scene = new Scene(root, 640, 480);
+
       stage.setScene(scene);
+      stage.setOnCloseRequest(new ExitHandler());
       stage.show();
   }
-  private class OpenHandler implements EventHandler<ActionEvent>{
+  private class NewHandler implements EventHandler<ActionEvent>{
 
       @Override
       public void handle(ActionEvent event) {
-          fileChooser.setInitialDirectory(new File("."));
-          File openFile = fileChooser.showOpenDialog(stage);
-          System.out.println(openFile);
+          if(confirm()) {
+              canvas.getChildren().clear();
+              graph = new ListGraph<>();
+          }
       }
   }
+  private class OpenBackgroundHandler implements EventHandler<ActionEvent>{
+
+      @Override
+      public void handle(ActionEvent event) {
+          if(canvas.getChildren().isEmpty()) {
+              fileChooser.setInitialDirectory(new File("."));
+              File openFile = fileChooser.showOpenDialog(stage);
+
+              Image background = new Image(openFile.toURI().toString());
+              ImageView backgroundView = new ImageView(background);
+
+              backgroundView.fitHeightProperty().bind(canvas.heightProperty());
+              backgroundView.fitWidthProperty().bind(canvas.widthProperty());
+
+              canvas.getChildren().add(0, backgroundView);
+              backgroundView.setMouseTransparent(true);
+              backgroundView.toBack();
+          }
+          else{
+              if(confirm()) {
+                  fileChooser.setInitialDirectory(new File("."));
+                  File openFile = fileChooser.showOpenDialog(stage);
+
+                  Image background = new Image(openFile.toURI().toString());
+                  ImageView backgroundView = new ImageView(background);
+
+                  backgroundView.fitHeightProperty().bind(canvas.heightProperty());
+                  backgroundView.fitWidthProperty().bind(canvas.widthProperty());
+
+                  canvas.getChildren().add(0, backgroundView);
+                  backgroundView.setMouseTransparent(true);
+                  backgroundView.toBack();
+              }
+          }
+
+
+      }
+  }
+
   private class SaveHandler implements EventHandler<ActionEvent>{
 
       @Override
@@ -150,19 +216,47 @@ public class Gui extends Application {
 
       }
   }
-  private class exitHandler implements EventHandler<WindowEvent>{
+  private class OpenHandler implements EventHandler<ActionEvent>{
+
+      @Override
+      public void handle(ActionEvent event) {
+          fileChooser.setInitialDirectory(new File("."));
+          File openFile = fileChooser.showOpenDialog(stage);
+          try{
+              FileReader fileReader = new FileReader((openFile));
+              BufferedReader reader = new BufferedReader(fileReader);
+              String line;
+              while(((line = reader.readLine()) != null)){
+                  System.out.println(line);
+              }
+
+              reader.close();
+          } catch (FileNotFoundException e) {
+              throw new RuntimeException(e);
+          } catch (IOException e) {
+              throw new RuntimeException(e);
+          }
+
+
+      }
+  }
+
+  private class ExitHandler implements EventHandler<WindowEvent>{
 
         @Override
         public void handle(WindowEvent event) {
-            Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-            alert.setContentText("Are you sure you wanna close?!");
-
-            Optional<ButtonType> clicked = alert.showAndWait();
-            if(clicked.isPresent() && clicked.get().equals(ButtonType.CANCEL)){
+            if(!confirm()){
                 event.consume();
             }
 
         }
+    }
+    private boolean confirm(){
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        alert.setContentText("You have unsaved changes, do you want to continue?");
+
+        Optional<ButtonType> clicked = alert.showAndWait();
+        return clicked.isPresent() && clicked.get().equals(ButtonType.OK);
     }
 
 

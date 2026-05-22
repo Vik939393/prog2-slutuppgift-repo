@@ -22,6 +22,7 @@ public class LocationNodeGui extends Pane {
         setPrefSize(40, 40);
 
         setOnMousePressed((event) -> {
+
             startX = event.getX();
             startY = event.getY();
         });
@@ -30,6 +31,7 @@ public class LocationNodeGui extends Pane {
             double newX = getLayoutX() + event.getX() - startX;
             double newY = getLayoutY() + event.getY() - startY;
             relocate(newX, newY);
+
         });
 
         setOnMouseClicked(event -> {
@@ -40,6 +42,7 @@ public class LocationNodeGui extends Pane {
                 if (result.isPresent() && result.get() == ButtonType.OK) {
                     Pane parent = (Pane) getParent(); //För att kunna använda getChildren() måste den förstå att den är en Pane
                     parent.getChildren().remove(this);
+                    event.consume();
                 }
             }
         });
