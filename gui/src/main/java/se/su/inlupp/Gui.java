@@ -29,11 +29,12 @@ public class Gui extends Application {
     private Stage stage;
     private Pane canvas;
     private Scene scene;
+    private Graph<String> graph;
 
   public void start(Stage stage) {
       this.stage = stage;
       stage.setTitle("BERRYS AND SHROOOOMS");
-      Graph<String> graph = new ListGraph<String>();
+      graph = new ListGraph<String>();
 
 
       BorderPane root = new BorderPane();
@@ -47,7 +48,10 @@ public class Gui extends Application {
 
       Menu start = new Menu("Start");
       menuBar.getMenus().add(start);
-      //MenuItem createNew = new MenuItem("New.. ");
+
+      MenuItem createNew = new MenuItem("New");
+      createNew.setOnAction(new NewHandler());
+
 
       MenuItem open = new MenuItem("Open");
       open.setOnAction(new OpenHandler());
@@ -65,15 +69,21 @@ public class Gui extends Application {
           }
       });
 
-      start.getItems().addAll(open,save,exit);
+      start.getItems().addAll(createNew, open,save,exit);
 
 
       VBox topV = new VBox(menuBar, topBar);
 
 
       Button newLocation = new Button("Add new location");
+
       Button BFS = new Button("Find shortest path (BFS)");
+
       Button DFS = new Button("Find existing path (DFS");
+
+      Button background = new Button("Add new background");
+      background.setOnAction(new OpenBackgroundHandler());
+
       TextField textField = new TextField();
       Button enterButton = new Button("Enter");
       Label resultLabel = new Label();
@@ -86,7 +96,8 @@ public class Gui extends Application {
 
               newLocation,
               BFS,
-              DFS
+              DFS,
+              background
 
       );
       bottomBar.getChildren().addAll(
@@ -100,6 +111,7 @@ public class Gui extends Application {
           }
       });*/
         newLocation.setOnAction(event -> {topBar.getChildren().addAll(textField, enterButton);});
+
 
 
 
@@ -121,21 +133,45 @@ public class Gui extends Application {
       stage.setOnCloseRequest(new ExitHandler());
       stage.show();
   }
-  private class OpenHandler implements EventHandler<ActionEvent>{
+  private class NewHandler implements EventHandler<ActionEvent>{
 
       @Override
       public void handle(ActionEvent event) {
-          fileChooser.setInitialDirectory(new File("."));
-          File openFile = fileChooser.showOpenDialog(stage);
+          confirm();
+          canvas.getChildren().clear();
+          graph = new ListGraph<>();
+      }
+  }
+  private class OpenBackgroundHandler implements EventHandler<ActionEvent>{
 
-          Image background = new Image(openFile.toURI().toString());
-          ImageView backgroundView = new ImageView(background);
+      @Override
+      public void handle(ActionEvent event) {
+          if(canvas.getChildren().isEmpty()) {
+              fileChooser.setInitialDirectory(new File("."));
+              File openFile = fileChooser.showOpenDialog(stage);
 
-          backgroundView.fitHeightProperty().bind(canvas.heightProperty());
-          backgroundView.fitWidthProperty().bind(canvas.widthProperty());
+              Image background = new Image(openFile.toURI().toString());
+              ImageView backgroundView = new ImageView(background);
 
-          canvas.getChildren().addAll(backgroundView);
+              backgroundView.fitHeightProperty().bind(canvas.heightProperty());
+              backgroundView.fitWidthProperty().bind(canvas.widthProperty());
 
+              canvas.getChildren().addAll(backgroundView);
+          }
+          else{
+              if(confirm()) {
+                  fileChooser.setInitialDirectory(new File("."));
+                  File openFile = fileChooser.showOpenDialog(stage);
+
+                  Image background = new Image(openFile.toURI().toString());
+                  ImageView backgroundView = new ImageView(background);
+
+                  backgroundView.fitHeightProperty().bind(canvas.heightProperty());
+                  backgroundView.fitWidthProperty().bind(canvas.widthProperty());
+
+                  canvas.getChildren().addAll(backgroundView);
+              }
+          }
 
 
       }
@@ -153,6 +189,15 @@ public class Gui extends Application {
               e.printStackTrace();
           }
           System.out.println(saveFile);
+
+      }
+  }
+  private class OpenHandler implements EventHandler<ActionEvent>{
+
+      @Override
+      public void handle(ActionEvent event) {
+          fileChooser.setInitialDirectory(new File("."));
+          File openFile = fileChooser.showOpenDialog(stage);
 
       }
   }
