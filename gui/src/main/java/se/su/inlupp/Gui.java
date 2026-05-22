@@ -8,6 +8,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.MouseButton;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
@@ -25,7 +26,9 @@ public class Gui extends Application {
     private Stage stage;
     private Pane canvas;
     private Scene scene;
+    private String locationName;
     private Graph<String> graph;
+    private boolean locationAdded;
 
   public void start(Stage stage) {
       this.stage = stage;
@@ -103,32 +106,9 @@ public class Gui extends Application {
               resultLabel
 
       );
-      /*searchButton.setOnAction(new EventHandler<ActionEvent>() {
-          @Override
-          public void handle(ActionEvent event) {
-            resultLabel.setText("Hej " + textField.getText());
-          }
-      });*/
 
       Pane centerCanvas = new Pane();
       root.setCenter(centerCanvas);
-
-        newLocation.setOnAction(event -> {
-            TextInputDialog createNode = new TextInputDialog();
-            createNode.setTitle("New location");
-            createNode.setHeaderText("Enter location name:");
-            Optional<String> result = createNode.showAndWait();
-            if (result.isPresent()) {
-                String name = result.get();
-                centerCanvas.setOnMouseClicked((event2) -> {
-                    if (event2.getTarget() == centerCanvas) {
-                        centerCanvas.getChildren().add(new LocationNodeGui(event2.getX(),event2.getY(), name));
-                        centerCanvas.setOnMouseClicked(null);
-                    }
-
-                });
-            }
-        });
 
 
 
@@ -141,10 +121,29 @@ public class Gui extends Application {
 
       root.setCenter(canvas);
 
-      canvas.setOnMouseClicked((event) -> {
-          double x = event.getX();
-          double y = event.getY();
-          canvas.getChildren().add(new LocationNodeGui(x,y, name));
+
+      newLocation.setOnAction(event -> {
+          locationAdded = true;
+          TextInputDialog createNode = new TextInputDialog();
+          createNode.setTitle("New location");
+          createNode.setHeaderText("Enter location name:");
+          Optional<String> result = createNode.showAndWait();
+          if(result.isPresent()){
+              locationName = result.get();
+          }
+
+              });
+
+      canvas.setOnMouseClicked((newEvent) -> {
+
+          if (locationAdded && newEvent.getTarget() == canvas && newEvent.getButton() == MouseButton.PRIMARY) {
+
+              double x = newEvent.getX();
+              double y = newEvent.getY();
+              canvas.getChildren().add(new LocationNodeGui(x, y, locationName));
+              newEvent.consume();
+              locationAdded = false;
+          }
       });
 
       scene = new Scene(root, 640, 480);
@@ -177,7 +176,9 @@ public class Gui extends Application {
               backgroundView.fitHeightProperty().bind(canvas.heightProperty());
               backgroundView.fitWidthProperty().bind(canvas.widthProperty());
 
-              canvas.getChildren().addAll(backgroundView);
+              canvas.getChildren().add(0, backgroundView);
+              backgroundView.setMouseTransparent(true);
+              backgroundView.toBack();
           }
           else{
               if(confirm()) {
@@ -190,7 +191,9 @@ public class Gui extends Application {
                   backgroundView.fitHeightProperty().bind(canvas.heightProperty());
                   backgroundView.fitWidthProperty().bind(canvas.widthProperty());
 
-                  canvas.getChildren().addAll(backgroundView);
+                  canvas.getChildren().add(0, backgroundView);
+                  backgroundView.setMouseTransparent(true);
+                  backgroundView.toBack();
               }
           }
 
