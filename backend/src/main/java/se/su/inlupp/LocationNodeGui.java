@@ -13,11 +13,12 @@ public class LocationNodeGui extends Pane {
     double startX, startY;
     String name;
 
-    public LocationNodeGui(double x, double y, String name) {
+    public LocationNodeGui(double x, double y, String name, String berryAmount) {
         this.name = name;
         relocate(x, y);
         Circle circle = new Circle(20, 20, 20);
-        circle.setFill(Color.GREEN);
+        LocationType amount = LocationType.fromString(berryAmount);
+        setColor(amount, circle);
         getChildren().add(circle);
         setPrefSize(40, 40);
 
@@ -46,8 +47,14 @@ public class LocationNodeGui extends Pane {
                 }
             }
         });
+    }
 
-
+    public void setColor(LocationType type, Circle c) {
+        switch (type) {
+            case SMALL_AMOUNT_BERRIES -> c.setFill(Color.INDIANRED);
+            case MEDIUM_AMOUNT_BERRIES -> c.setFill(Color.MEDIUMVIOLETRED);
+            case BIG_AMOUNT_BERRIES -> c.setFill(Color.DARKRED);
+        }
 
     }
 }

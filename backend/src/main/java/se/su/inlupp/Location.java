@@ -19,7 +19,7 @@ public class Location {
             case SMALL_AMOUNT_BERRIES:
                 weight = 1;
                 return "Small amount of berries in this location.";
-            case MIDDLE_AMOUNT_BERRIES:
+            case MEDIUM_AMOUNT_BERRIES:
                 weight = 2;
                 return "Medium amount of berries in this location";
             case BIG_AMOUNT_BERRIES:
