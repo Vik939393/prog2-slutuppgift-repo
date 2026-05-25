@@ -1,6 +1,8 @@
 package se.su.inlupp;
 
 
+import javafx.scene.Node;
+
 public class Controller {
     private ListGraph<Location> graph = new ListGraph<>();
 
@@ -12,9 +14,17 @@ public class Controller {
         graph.remove(location);
     }
 
-    public void connectNodes(Location start, Location end, String name, int distance) {
-        graph.connect(start, end, name, distance);
+    public void connectNodes(LocationNodeGui start, LocationNodeGui end, String name, int distance) {
+        for (Location s : graph) {
+            if (start.getName().equals(s.getName())) {
+                for (Location e : graph) {
+                    if (end.getName().equals(e.getName())) {
+                        graph.connect(s, e, name, distance);
+                        return;
+                    }
+                }
+            }
+        }
     }
-
 
 }

@@ -4,6 +4,7 @@ import javafx.application.Application;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Pos;
+import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
@@ -32,6 +33,9 @@ public class Gui extends Application {
     private boolean locationAdded;
     private String currentImagePath;
     private boolean unsavedChanges;
+    private LocationNodeGui from;
+    private LocationNodeGui to;
+    private static int edgeCounter = 1;
 
   public void start(Stage stage) {
       this.stage = stage;
@@ -102,6 +106,7 @@ public class Gui extends Application {
 
       topBar.getChildren().addAll(
               newLocation,
+              connectLocations,
               BFS,
               DFS,
               background
@@ -160,7 +165,7 @@ public class Gui extends Application {
                       double x = newEvent.getX();
                       double y = newEvent.getY();
                       controller.addNode(name, berryAmount);
-                      canvas.getChildren().add(new LocationNodeGui(x, y, locationName, berryAmount));
+                      canvas.getChildren().add(new LocationNodeGui(x, y, name, berryAmount));
                       newEvent.consume();
                       locationAdded = false;
 
@@ -172,9 +177,29 @@ public class Gui extends Application {
 
               });
 
+      connectLocations.setOnAction(event-> {
+          for (Node n : canvas.getChildren()) {
+              if(n instanceof LocationNodeGui lng) {
+                  lng.setOnMouseClicked(newEvent -> {
+                      if (newEvent.getButton() == MouseButton.PRIMARY) {
+                          if (from == null) {
+                              from = lng;
+                              System.out.println("From är satt till: " + lng.getName());
+                          } else {
+                              to = lng;
+                              System.out.println("To är satt till: " + lng.getName());
+                              controller.connectNodes(from, to, "Edge " + edgeCounter, 1);
+                              from = null;
+                              to = null;
+                              newEvent.consume();
+                          }
 
-
-
+                      }
+                  });
+              }
+          }
+          edgeCounter ++;
+      });
       scene = new Scene(root, 640, 480);
 
       stage.setScene(scene);
@@ -313,6 +338,8 @@ public class Gui extends Application {
         Optional<ButtonType> clicked = alert.showAndWait();
         return clicked.isPresent() && clicked.get().equals(ButtonType.OK);
     }
+
+
 
 
   public static void main(String[] args) {
