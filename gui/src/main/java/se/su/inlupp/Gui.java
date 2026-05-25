@@ -3,7 +3,9 @@ package se.su.inlupp;
 import javafx.application.Application;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
+import javafx.event.EventTarget;
 import javafx.geometry.Pos;
+import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
@@ -32,6 +34,9 @@ public class Gui extends Application {
     private boolean locationAdded;
     private String currentImagePath;
     private boolean unsavedChanges;
+    private LocationNodeGui firstNode;
+    private boolean connectMode;
+    private static int edgeCounter = 0;
 
   public void start(Stage stage) {
       this.stage = stage;
@@ -102,6 +107,7 @@ public class Gui extends Application {
 
       topBar.getChildren().addAll(
               newLocation,
+              connectLocations,
               BFS,
               DFS,
               background
@@ -160,7 +166,45 @@ public class Gui extends Application {
                       double x = newEvent.getX();
                       double y = newEvent.getY();
                       controller.addNode(name, berryAmount);
-                      canvas.getChildren().add(new LocationNodeGui(x, y, locationName, berryAmount));
+                      LocationNodeGui node = new LocationNodeGui(x, y, name, berryAmount);
+                      connectLocations.setOnAction(newestEvent-> {
+                          connectMode = true;
+                          firstNode = null;
+                      });
+                      node.setOnMouseClicked(newestEvent ->{
+                          if(!connectMode){
+                              return;
+                          }
+
+                          if(newestEvent.getButton() == MouseButton.PRIMARY ){
+
+                              if(firstNode == null){
+                                  firstNode = node;
+                                  System.out.println(firstNode.getName());
+                              }else {
+
+                                  if(node == firstNode){
+                                      return;
+                                  }
+                                  LocationNodeGui secondNode = node;
+                                  System.out.println(secondNode.getName());
+                                  edgeCounter++;
+                                  controller.connectNodes(firstNode, secondNode, "Edge" + edgeCounter, 1);
+
+
+                                  connectMode = false;
+                                  firstNode = null;
+                              }
+                              newestEvent.consume();
+                          }
+
+
+
+
+                      });
+                      canvas.getChildren().add(node);
+                      //graph.add(String.valueOf(node));
+
                       newEvent.consume();
                       locationAdded = false;
 
@@ -168,9 +212,10 @@ public class Gui extends Application {
 
               });
           }
-          unsavedChanges = true;
+          //unsavedChanges = true;
 
               });
+
 
 
 
