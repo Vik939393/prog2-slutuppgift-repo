@@ -1,6 +1,8 @@
 package se.su.inlupp;
 
 
+import javafx.scene.Node;
+
 public class Controller {
     private ListGraph<Location> graph = new ListGraph<>();
 
@@ -24,6 +26,5 @@ public class Controller {
             }
         }
     }
-
 
 }

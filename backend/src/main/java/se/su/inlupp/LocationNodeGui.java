@@ -1,5 +1,6 @@
 package se.su.inlupp;
 
+import javafx.event.EventTarget;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.ContextMenu;
@@ -17,6 +18,10 @@ public class LocationNodeGui extends Pane {
     double startX, startY;
     String name;
     Circle circle;
+<<<<<<< HEAD
+=======
+
+>>>>>>> Vbranch
 
     public LocationNodeGui(double x, double y, String name, String berryAmount) {
         this.name = name;
@@ -65,6 +70,14 @@ public class LocationNodeGui extends Pane {
 
     public String getName() {
         return name;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public Circle getCircle() {
+        return circle;
     }
 
     public void setColor(LocationType type, Circle c) {

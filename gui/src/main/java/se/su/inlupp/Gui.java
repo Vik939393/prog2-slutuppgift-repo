@@ -34,9 +34,9 @@ public class Gui extends Application {
     private boolean locationAdded;
     private String currentImagePath;
     private boolean unsavedChanges;
-    private LocationNodeGui firstNode;
-    private boolean connectMode;
-    private static int edgeCounter = 0;
+    private LocationNodeGui from;
+    private LocationNodeGui to;
+    private static int edgeCounter = 1;
 
   public void start(Stage stage) {
       this.stage = stage;
@@ -166,45 +166,7 @@ public class Gui extends Application {
                       double x = newEvent.getX();
                       double y = newEvent.getY();
                       controller.addNode(name, berryAmount);
-                      LocationNodeGui node = new LocationNodeGui(x, y, name, berryAmount);
-                      connectLocations.setOnAction(newestEvent-> {
-                          connectMode = true;
-                          firstNode = null;
-                      });
-                      node.setOnMouseClicked(newestEvent ->{
-                          if(!connectMode){
-                              return;
-                          }
-
-                          if(newestEvent.getButton() == MouseButton.PRIMARY ){
-
-                              if(firstNode == null){
-                                  firstNode = node;
-                                  System.out.println(firstNode.getName());
-                              }else {
-
-                                  if(node == firstNode){
-                                      return;
-                                  }
-                                  LocationNodeGui secondNode = node;
-                                  System.out.println(secondNode.getName());
-                                  edgeCounter++;
-                                  controller.connectNodes(firstNode, secondNode, "Edge" + edgeCounter, 1);
-
-
-                                  connectMode = false;
-                                  firstNode = null;
-                              }
-                              newestEvent.consume();
-                          }
-
-
-
-
-                      });
-                      canvas.getChildren().add(node);
-                      //graph.add(String.valueOf(node));
-
+                      canvas.getChildren().add(new LocationNodeGui(x, y, name, berryAmount));
                       newEvent.consume();
                       locationAdded = false;
 
@@ -212,14 +174,33 @@ public class Gui extends Application {
 
               });
           }
-          //unsavedChanges = true;
+          unsavedChanges = true;
 
               });
 
+      connectLocations.setOnAction(event-> {
+          for (Node n : canvas.getChildren()) {
+              if(n instanceof LocationNodeGui lng) {
+                  lng.setOnMouseClicked(newEvent -> {
+                      if (newEvent.getButton() == MouseButton.PRIMARY) {
+                          if (from == null) {
+                              from = lng;
+                              System.out.println("From är satt till: " + lng.getName());
+                          } else {
+                              to = lng;
+                              System.out.println("To är satt till: " + lng.getName());
+                              controller.connectNodes(from, to, "Edge " + edgeCounter, 1);
+                              from = null;
+                              to = null;
+                              newEvent.consume();
+                          }
 
-
-
-
+                      }
+                  });
+              }
+          }
+          edgeCounter ++;
+      });
       scene = new Scene(root, 640, 480);
 
       stage.setScene(scene);
