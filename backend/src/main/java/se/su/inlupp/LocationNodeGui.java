@@ -2,6 +2,8 @@ package se.su.inlupp;
 
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
+import javafx.scene.control.ContextMenu;
+import javafx.scene.control.MenuItem;
 import javafx.scene.input.MouseButton;
 import javafx.scene.layout.Pane;
 import javafx.scene.shape.Circle;
@@ -35,8 +37,14 @@ public class LocationNodeGui extends Pane {
 
         });
 
-        setOnMouseClicked(event -> {
-            if (event.getButton() == MouseButton.SECONDARY) {
+        ContextMenu menu = new ContextMenu();
+        MenuItem delete = new MenuItem("Delete");
+        menu.getItems().add(delete);
+
+        setOnContextMenuRequested(event -> menu.show(this, event.getScreenX(), event.getScreenY())
+        );
+
+        delete.setOnAction(event -> {
                 Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
                 alert.setContentText("Delete this location?");
                 Optional<ButtonType> result = alert.showAndWait();
@@ -45,7 +53,7 @@ public class LocationNodeGui extends Pane {
                     parent.getChildren().remove(this);
                     event.consume();
                 }
-            }
+
         });
     }
 
