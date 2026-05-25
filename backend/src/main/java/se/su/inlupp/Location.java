@@ -5,9 +5,9 @@ public class Location {
     private LocationType type;
     private int weight;
 
-    public Location(String name, LocationType type){
+    public Location(String name, String amount){
         this.name = name;
-        this.type = type;
+        this.type = LocationType.fromString(amount);
     }
 
     public String getName() {
@@ -31,7 +31,7 @@ public class Location {
     }
 
     public String toString() {
-        return "Location: " + name + " - " + getType();
+        return "Location: " + name + " - " + getType() + " Backend weight: " + weight + ".";
     }
     
     public static void main(String[] args) {

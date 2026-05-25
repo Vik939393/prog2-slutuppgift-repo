@@ -5,8 +5,7 @@ public class Controller {
     private ListGraph<Location> graph = new ListGraph<>();
 
     public void addNode(String name, String berryAmount) {
-        LocationType amount = LocationType.fromString(berryAmount);
-        graph.add(new Location(name, amount));
+        graph.add(new Location(name, berryAmount));
     }
 
     public void removeNode(Location location) {

@@ -159,11 +159,14 @@ public class Gui extends Application {
                       canvas.getChildren().add(new LocationNodeGui(x, y, locationName, berryAmount));
                       newEvent.consume();
                       locationAdded = false;
+
                   }
+
               });
           }
 
               });
+
 
 
 
