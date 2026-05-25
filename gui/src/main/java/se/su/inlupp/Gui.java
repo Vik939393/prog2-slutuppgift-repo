@@ -29,6 +29,8 @@ public class Gui extends Application {
     private String locationName;
     private Graph<String> graph;
     private boolean locationAdded;
+    private String currentImagePath;
+    private boolean unsavedChanges;
 
   public void start(Stage stage) {
       this.stage = stage;
@@ -70,7 +72,7 @@ public class Gui extends Application {
           }
       });
 
-      start.getItems().addAll(createNew, open,save,exit);
+      start.getItems().addAll(createNew,open,save,exit);
 
 
       VBox topV = new VBox(menuBar, topBar);
@@ -78,12 +80,15 @@ public class Gui extends Application {
 
       Button newLocation = new Button("Add new location");
 
+      Button connectLocations = new Button("Connect");
+
       Button BFS = new Button("Find shortest path (BFS)");
 
       Button DFS = new Button("Find existing path (DFS");
 
       Button background = new Button("Add new background");
       background.setOnAction(new OpenBackgroundHandler());
+
 
       TextField textField = new TextField();
       Button enterButton = new Button("Enter");
@@ -95,7 +100,6 @@ public class Gui extends Application {
 
 
       topBar.getChildren().addAll(
-
               newLocation,
               BFS,
               DFS,
@@ -131,6 +135,7 @@ public class Gui extends Application {
           if(result.isPresent()){
               locationName = result.get();
           }
+          unsavedChanges = true;
 
               });
 
@@ -169,8 +174,9 @@ public class Gui extends Application {
           if(canvas.getChildren().isEmpty()) {
               fileChooser.setInitialDirectory(new File("."));
               File openFile = fileChooser.showOpenDialog(stage);
+              currentImagePath = openFile.toURI().toString();
 
-              Image background = new Image(openFile.toURI().toString());
+              Image background = new Image(currentImagePath);
               ImageView backgroundView = new ImageView(background);
 
               backgroundView.fitHeightProperty().bind(canvas.heightProperty());
@@ -178,14 +184,15 @@ public class Gui extends Application {
 
               canvas.getChildren().add(0, backgroundView);
               backgroundView.setMouseTransparent(true);
-              backgroundView.toBack();
+              //unsavedChanges = true;
           }
           else{
               if(confirm()) {
                   fileChooser.setInitialDirectory(new File("."));
                   File openFile = fileChooser.showOpenDialog(stage);
+                  currentImagePath = openFile.toURI().toString();
 
-                  Image background = new Image(openFile.toURI().toString());
+                  Image background = new Image(currentImagePath);
                   ImageView backgroundView = new ImageView(background);
 
                   backgroundView.fitHeightProperty().bind(canvas.heightProperty());
@@ -193,7 +200,7 @@ public class Gui extends Application {
 
                   canvas.getChildren().add(0, backgroundView);
                   backgroundView.setMouseTransparent(true);
-                  backgroundView.toBack();
+                  //unsavedChanges = true;
               }
           }
 
@@ -206,9 +213,16 @@ public class Gui extends Application {
       @Override
       public void handle(ActionEvent event) {
           File saveFile = fileChooser.showSaveDialog(stage);
+          if(saveFile==null)
+              return;
           try {
-              FileOutputStream fos =new FileOutputStream(saveFile);
-              ObjectOutputStream oos = new ObjectOutputStream(fos);
+              FileWriter fw =new FileWriter(saveFile);
+              BufferedWriter bw = new BufferedWriter(fw);
+
+              bw.write("IMAGE;" + currentImagePath);
+              bw.newLine();
+              bw.close();
+
           }catch(IOException e){
               e.printStackTrace();
           }
@@ -222,13 +236,30 @@ public class Gui extends Application {
       public void handle(ActionEvent event) {
           fileChooser.setInitialDirectory(new File("."));
           File openFile = fileChooser.showOpenDialog(stage);
+          if(openFile==null)
+              return;
+
           try{
               FileReader fileReader = new FileReader((openFile));
               BufferedReader reader = new BufferedReader(fileReader);
+              canvas.getChildren().clear();
               String line;
               while(((line = reader.readLine()) != null)){
-                  System.out.println(line);
-              }
+                  String [] split  = line.split(";");
+                     if(split[0].equals("IMAGE")){
+                         currentImagePath = split[1];
+                         Image background = new Image(split[1]);
+                         ImageView backgroundView = new ImageView(background);
+
+                         backgroundView.fitHeightProperty().bind(canvas.heightProperty());
+                         backgroundView.fitWidthProperty().bind(canvas.widthProperty());
+
+                         canvas.getChildren().add(0, backgroundView);
+                         backgroundView.setMouseTransparent(true);
+
+                      }
+                  }
+
 
               reader.close();
           } catch (FileNotFoundException e) {
