@@ -4,8 +4,8 @@ package se.su.inlupp;
 public class Controller {
     private ListGraph<Location> graph = new ListGraph<>();
 
-    public void addNode(Location newLocation) {
-        graph.add(newLocation);
+    public void addNode(String name, String berryAmount) {
+        graph.add(new Location(name, berryAmount));
     }
 
     public void removeNode(Location location) {

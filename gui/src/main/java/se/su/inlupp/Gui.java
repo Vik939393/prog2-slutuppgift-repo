@@ -22,6 +22,7 @@ import java.util.Optional;
 
 public class Gui extends Application {
 
+    private final Controller controller = new Controller();
     private FileChooser fileChooser = new FileChooser();
     private Stage stage;
     private Pane canvas;
@@ -128,28 +129,51 @@ public class Gui extends Application {
 
       newLocation.setOnAction(event -> {
           locationAdded = true;
-          TextInputDialog createNode = new TextInputDialog();
+          Dialog<ButtonType> createNode = new Dialog();
           createNode.setTitle("New location");
-          createNode.setHeaderText("Enter location name:");
-          Optional<String> result = createNode.showAndWait();
-          if(result.isPresent()){
-              locationName = result.get();
+          TextField nameField = new TextField();
+          nameField.setPromptText("Name of new location:");
+
+          ChoiceBox<String> chooseBerryAmount = new ChoiceBox<>();
+          chooseBerryAmount.getItems().addAll("Small amount of berries",
+                  "Medium amount of berries", "Large amount of berries");
+
+          HBox createWindow = new HBox(10);
+          createWindow.getChildren().addAll(
+                  new Label("Name:"), nameField,
+                  new Label("Amount of berries:"), chooseBerryAmount
+          );
+
+          createNode.getDialogPane().setContent(createWindow);
+          createNode.getDialogPane().getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
+
+          Optional<ButtonType> result = createNode.showAndWait();
+          if(result.isPresent() && result.get() == ButtonType.OK){
+
+              String name = nameField.getText();
+              String berryAmount = chooseBerryAmount.getValue();
+
+              canvas.setOnMouseClicked((newEvent) -> {
+
+                  if (locationAdded && newEvent.getTarget() == canvas && newEvent.getButton() == MouseButton.PRIMARY) {
+
+                      double x = newEvent.getX();
+                      double y = newEvent.getY();
+                      controller.addNode(name, berryAmount);
+                      canvas.getChildren().add(new LocationNodeGui(x, y, locationName, berryAmount));
+                      newEvent.consume();
+                      locationAdded = false;
+
+                  }
+
+              });
           }
           unsavedChanges = true;
 
               });
 
-      canvas.setOnMouseClicked((newEvent) -> {
 
-          if (locationAdded && newEvent.getTarget() == canvas && newEvent.getButton() == MouseButton.PRIMARY) {
 
-              double x = newEvent.getX();
-              double y = newEvent.getY();
-              canvas.getChildren().add(new LocationNodeGui(x, y, locationName));
-              newEvent.consume();
-              locationAdded = false;
-          }
-      });
 
       scene = new Scene(root, 640, 480);
 
