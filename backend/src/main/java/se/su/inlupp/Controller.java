@@ -1,10 +1,7 @@
 package se.su.inlupp;
 
-
-import javafx.scene.Node;
-
 public class Controller {
-    private ListGraph<Location> graph = new ListGraph<>();
+    private Graph<Location> graph = new ListGraph<>();
 
     public void addNode(String name, String berryAmount) {
         graph.add(new Location(name, berryAmount));
@@ -30,7 +27,7 @@ public class Controller {
         }
     }
 
-    public ListGraph<Location> getGraph() {
+    public Graph<Location> getGraph() {
         return graph;
     }
 }
