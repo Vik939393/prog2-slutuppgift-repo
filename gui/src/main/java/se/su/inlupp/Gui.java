@@ -24,6 +24,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+
 public class Gui extends Application {
 
     private final Controller controller = new Controller();
@@ -32,7 +33,7 @@ public class Gui extends Application {
     private Pane canvas;
     private Scene scene;
     private String locationName;
-    private Graph<String> graph;
+    //private Graph<String> graph;
     private boolean locationAdded;
     private String currentImagePath;
     private boolean unsavedChanges;
@@ -40,12 +41,12 @@ public class Gui extends Application {
     private LocationNodeGui to;
     private static int edgeCounter = 1;
     private List<LocationNodeGui> locationNodes = new ArrayList<>();
-    private List<Edge> locationEdges = new ArrayList<>();
+
 
   public void start(Stage stage) {
       this.stage = stage;
       stage.setTitle("BERRYS AND SHROOOOMS");
-      graph = new ListGraph<String>();
+      //graph = new ListGraph<String>();
 
 
       BorderPane root = new BorderPane();
@@ -205,7 +206,7 @@ public class Gui extends Application {
 
                               canvas.getChildren().add(1, newLine);
                               System.out.println("To är satt till: " + lng.getName());
-                              controller.connectNodes(from, to, "Edge " + edgeCounter, 1);
+                              controller.connectNodes(from.getName(), to.getName(), "Edge " + edgeCounter, 1);
                               unsavedChanges = true;
                               from = null;
                               to = null;
@@ -230,7 +231,7 @@ public class Gui extends Application {
       public void handle(ActionEvent event) {
           if(confirm()) {
               canvas.getChildren().clear();
-              graph = new ListGraph<>();
+              controller.clear();
           }
       }
   }
