@@ -6,20 +6,23 @@ import javafx.scene.control.ButtonType;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.MenuItem;
 import javafx.scene.input.MouseButton;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
 import javafx.scene.shape.Circle;
 import javafx.scene.paint.Color;
 
+import java.awt.event.ActionEvent;
 import java.util.Optional;
 
 public class LocationNodeGui extends Pane {
     double startX, startY;
     String name;
     Circle circle;
-
+    private String berryAmount;
 
     public LocationNodeGui(double x, double y, String name, String berryAmount) {
         this.name = name;
+        this.berryAmount = berryAmount;
         relocate(x, y);
         circle = new Circle(20, 20, 20);
         LocationType amount = LocationType.fromString(berryAmount);
@@ -42,6 +45,7 @@ public class LocationNodeGui extends Pane {
 
         ContextMenu menu = new ContextMenu();
         MenuItem delete = new MenuItem("Delete");
+
         menu.getItems().add(delete);
 
         setOnContextMenuRequested(event -> menu.show(this, event.getScreenX(), event.getScreenY())
@@ -54,10 +58,14 @@ public class LocationNodeGui extends Pane {
                 if (result.isPresent() && result.get() == ButtonType.OK) {
                     Pane parent = (Pane) getParent(); //För att kunna använda getChildren() måste den förstå att den är en Pane
                     parent.getChildren().remove(this);
+
+
                     event.consume();
                 }
 
         });
+
+
     }
 
     public String getName() {
@@ -68,6 +76,10 @@ public class LocationNodeGui extends Pane {
         return circle;
     }
 
+    public String getBerryAmount() {
+        return berryAmount;
+    }
+
     public void setColor(LocationType type, Circle c) {
         switch (type) {
             case SMALL_AMOUNT_BERRIES -> c.setFill(Color.INDIANRED);
@@ -76,4 +88,5 @@ public class LocationNodeGui extends Pane {
         }
 
     }
+
 }

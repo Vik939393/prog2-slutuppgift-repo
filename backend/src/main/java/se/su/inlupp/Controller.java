@@ -13,6 +13,9 @@ public class Controller {
     public void removeNode(Location location) {
         graph.remove(location);
     }
+    public void clear(){
+        graph = new ListGraph<>();
+    }
 
     public void connectNodes(LocationNodeGui start, LocationNodeGui end, String name, int distance) {
         for (Location s : graph) {
@@ -27,4 +30,7 @@ public class Controller {
         }
     }
 
+    public ListGraph<Location> getGraph() {
+        return graph;
+    }
 }

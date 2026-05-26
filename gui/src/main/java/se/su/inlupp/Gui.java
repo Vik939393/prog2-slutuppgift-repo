@@ -14,11 +14,14 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
+import javafx.scene.shape.Line;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 
 import java.io.*;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 public class Gui extends Application {
@@ -36,6 +39,8 @@ public class Gui extends Application {
     private LocationNodeGui from;
     private LocationNodeGui to;
     private static int edgeCounter = 1;
+    private List<LocationNodeGui> locationNodes = new ArrayList<>();
+    private List<Edge> locationEdges = new ArrayList<>();
 
   public void start(Stage stage) {
       this.stage = stage;
@@ -165,7 +170,11 @@ public class Gui extends Application {
                       double x = newEvent.getX();
                       double y = newEvent.getY();
                       controller.addNode(name, berryAmount);
-                      canvas.getChildren().add(new LocationNodeGui(x, y, name, berryAmount));
+                      LocationNodeGui node = new LocationNodeGui(x,y,name,berryAmount);
+                      canvas.getChildren().add(node);
+                      locationNodes.add(node);
+                      unsavedChanges = true;
+
                       newEvent.consume();
                       locationAdded = false;
 
@@ -173,7 +182,7 @@ public class Gui extends Application {
 
               });
           }
-          unsavedChanges = true;
+         // unsavedChanges = true;
 
               });
 
@@ -187,8 +196,17 @@ public class Gui extends Application {
                               System.out.println("From är satt till: " + lng.getName());
                           } else {
                               to = lng;
+                              Line newLine = new javafx.scene.shape.Line();
+                              newLine.startXProperty().bind(from.layoutXProperty().add(20));
+                              newLine.startYProperty().bind(from.layoutYProperty().add(20));
+
+                              newLine.endXProperty().bind(to.layoutXProperty().add(20));
+                              newLine.endYProperty().bind(to.layoutYProperty().add(20));
+
+                              canvas.getChildren().add(1, newLine);
                               System.out.println("To är satt till: " + lng.getName());
                               controller.connectNodes(from, to, "Edge " + edgeCounter, 1);
+                              unsavedChanges = true;
                               from = null;
                               to = null;
                               newEvent.consume();
@@ -220,40 +238,14 @@ public class Gui extends Application {
 
       @Override
       public void handle(ActionEvent event) {
-          if(canvas.getChildren().isEmpty()) {
-              fileChooser.setInitialDirectory(new File("."));
-              File openFile = fileChooser.showOpenDialog(stage);
-              currentImagePath = openFile.toURI().toString();
-
-              Image background = new Image(currentImagePath);
-              ImageView backgroundView = new ImageView(background);
-
-              backgroundView.fitHeightProperty().bind(canvas.heightProperty());
-              backgroundView.fitWidthProperty().bind(canvas.widthProperty());
-
-              canvas.getChildren().add(0, backgroundView);
-              backgroundView.setMouseTransparent(true);
-              //unsavedChanges = true;
-          }
-          else{
+          if(unsavedChanges) {
               if(confirm()) {
-                  fileChooser.setInitialDirectory(new File("."));
-                  File openFile = fileChooser.showOpenDialog(stage);
-                  currentImagePath = openFile.toURI().toString();
-
-                  Image background = new Image(currentImagePath);
-                  ImageView backgroundView = new ImageView(background);
-
-                  backgroundView.fitHeightProperty().bind(canvas.heightProperty());
-                  backgroundView.fitWidthProperty().bind(canvas.widthProperty());
-
-                  canvas.getChildren().add(0, backgroundView);
-                  backgroundView.setMouseTransparent(true);
-                  //unsavedChanges = true;
+                  openBackground();
               }
           }
-
-
+          else{
+                  openBackground();
+          }
       }
   }
 
@@ -270,7 +262,14 @@ public class Gui extends Application {
 
               bw.write("IMAGE;" + currentImagePath);
               bw.newLine();
+              for(LocationNodeGui node : locationNodes){
+                  bw.write("LOCATION;" + node.getName()+";"+node.getLayoutX() +";" + node.getLayoutY() +";" +
+                          node.getBerryAmount());
+                  bw.newLine();
+              }
+
               bw.close();
+              unsavedChanges = false;
 
           }catch(IOException e){
               e.printStackTrace();
@@ -283,6 +282,9 @@ public class Gui extends Application {
 
       @Override
       public void handle(ActionEvent event) {
+          if(!confirm()){
+              return;
+          }
           fileChooser.setInitialDirectory(new File("."));
           File openFile = fileChooser.showOpenDialog(stage);
           if(openFile==null)
@@ -292,6 +294,8 @@ public class Gui extends Application {
               FileReader fileReader = new FileReader((openFile));
               BufferedReader reader = new BufferedReader(fileReader);
               canvas.getChildren().clear();
+              locationNodes.clear();
+              controller.clear();
               String line;
               while(((line = reader.readLine()) != null)){
                   String [] split  = line.split(";");
@@ -306,11 +310,22 @@ public class Gui extends Application {
                          canvas.getChildren().add(0, backgroundView);
                          backgroundView.setMouseTransparent(true);
 
-                      }
+                      } else if(split[0].equals("LOCATION")){
+                         String name = split[1];
+                         double x = Double.parseDouble(split[2]);
+                         double y = Double.parseDouble(split[3]);
+                         String berryAmount = split[4];
+                         LocationNodeGui node = new LocationNodeGui(x, y, name, berryAmount);
+                         canvas.getChildren().add(node);
+                         locationNodes.add(node);
+                         controller.addNode(node.getName(), berryAmount);
+
+                     }
                   }
 
 
               reader.close();
+              unsavedChanges = false;
           } catch (FileNotFoundException e) {
               throw new RuntimeException(e);
           } catch (IOException e) {
@@ -331,13 +346,34 @@ public class Gui extends Application {
 
         }
     }
-    private boolean confirm(){
-        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-        alert.setContentText("You have unsaved changes, do you want to continue?");
+    private boolean confirm() {
+        if (unsavedChanges) {
+            Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+            alert.setContentText("You have unsaved changes, do you want to continue?");
 
-        Optional<ButtonType> clicked = alert.showAndWait();
-        return clicked.isPresent() && clicked.get().equals(ButtonType.OK);
+            Optional<ButtonType> clicked = alert.showAndWait();
+            return clicked.isPresent() && clicked.get().equals(ButtonType.OK);
+        }
+        return true;
     }
+    private void openBackground(){
+        fileChooser.setInitialDirectory(new File("."));
+        File openFile = fileChooser.showOpenDialog(stage);
+        currentImagePath = openFile.toURI().toString();
+
+        Image background = new Image(currentImagePath);
+        ImageView backgroundView = new ImageView(background);
+
+        backgroundView.fitHeightProperty().bind(canvas.heightProperty());
+        backgroundView.fitWidthProperty().bind(canvas.widthProperty());
+
+        canvas.getChildren().removeIf(node -> node instanceof ImageView);
+
+        canvas.getChildren().add(0, backgroundView);
+        backgroundView.setMouseTransparent(true);
+        unsavedChanges = true;
+    }
+
 
   public static void main(String[] args) {
     launch(args);
