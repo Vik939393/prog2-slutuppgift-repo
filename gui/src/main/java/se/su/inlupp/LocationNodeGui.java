@@ -1,17 +1,13 @@
 package se.su.inlupp;
 
-import javafx.event.EventTarget;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.MenuItem;
-import javafx.scene.input.MouseButton;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
 import javafx.scene.shape.Circle;
 import javafx.scene.paint.Color;
 
-import java.awt.event.ActionEvent;
 import java.util.Optional;
 
 public class LocationNodeGui extends Pane {

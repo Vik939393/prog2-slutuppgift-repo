@@ -39,17 +39,20 @@ public class ListGraph<T> implements Graph<T> {
     @Override
     public void connect(T node1, T node2, String name, int weight) {
         if (hasNode(node1) && hasNode(node2)) {
-            if (weight < 0 || node1.equals(node2)) {
-                throw new IllegalArgumentException();
+            if (weight < 0) {
+                throw new IllegalArgumentException("Weight must be greater than zero.");
+            }
+            if (node1.equals(node2)) {
+                throw new IllegalArgumentException("Location can not be connected to itself.");
             }
             for (Edge<T> e : nodesWithEdges.get(node1)) {
                 if (e.getDestination().equals(node2)) {
-                    throw new IllegalStateException();
+                    throw new IllegalStateException("Locations are already connected");
                 }
             }
             for (Edge<T> e : nodesWithEdges.get(node2)) {
                 if (e.getDestination().equals(node1)) {
-                    throw new IllegalStateException();
+                    throw new IllegalStateException("Locations are already connected");
                 }
             }
             Set<Edge<T>> oneEdges = nodesWithEdges.get(node1);
@@ -58,14 +61,8 @@ public class ListGraph<T> implements Graph<T> {
             oneEdges.add(new EdgeImpl<T>(node2, name, weight));
             twoEdges.add(new EdgeImpl<T>(node1, name, weight));
 
-            for (Edge<T> edge : oneEdges) {
-                System.out.println("oneEdges edge: " + edge);
-            }
-            for (Edge<T> edge : twoEdges) {
-                System.out.println("twoEdges edge: " + edge);
-            }
         } else {
-            throw new NoSuchElementException();
+            throw new NoSuchElementException("Locations must be added before connection.");
         }
     }
 

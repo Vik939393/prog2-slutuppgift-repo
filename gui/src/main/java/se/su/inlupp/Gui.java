@@ -10,6 +10,7 @@ import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseButton;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
@@ -24,6 +25,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+
 public class Gui extends Application {
 
     private final Controller controller = new Controller();
@@ -32,7 +34,7 @@ public class Gui extends Application {
     private Pane canvas;
     private Scene scene;
     private String locationName;
-    private Graph<String> graph;
+    //private Graph<String> graph;
     private boolean locationAdded;
     private String currentImagePath;
     private boolean unsavedChanges;
@@ -40,12 +42,12 @@ public class Gui extends Application {
     private LocationNodeGui to;
     private static int edgeCounter = 1;
     private List<LocationNodeGui> locationNodes = new ArrayList<>();
-    private List<Edge> locationEdges = new ArrayList<>();
+
 
   public void start(Stage stage) {
       this.stage = stage;
       stage.setTitle("BERRYS AND SHROOOOMS");
-      graph = new ListGraph<String>();
+      //graph = new ListGraph<String>();
 
 
       BorderPane root = new BorderPane();
@@ -171,6 +173,7 @@ public class Gui extends Application {
                       double y = newEvent.getY();
                       controller.addNode(name, berryAmount);
                       LocationNodeGui node = new LocationNodeGui(x,y,name,berryAmount);
+                      rightClick(node);
                       canvas.getChildren().add(node);
                       locationNodes.add(node);
                       unsavedChanges = true;
@@ -182,7 +185,7 @@ public class Gui extends Application {
 
               });
           }
-         // unsavedChanges = true;
+
 
               });
 
@@ -196,16 +199,9 @@ public class Gui extends Application {
                               System.out.println("From är satt till: " + lng.getName());
                           } else {
                               to = lng;
-                              Line newLine = new javafx.scene.shape.Line();
-                              newLine.startXProperty().bind(from.layoutXProperty().add(20));
-                              newLine.startYProperty().bind(from.layoutYProperty().add(20));
-
-                              newLine.endXProperty().bind(to.layoutXProperty().add(20));
-                              newLine.endYProperty().bind(to.layoutYProperty().add(20));
-
-                              canvas.getChildren().add(1, newLine);
+                              drawConnectionLine(from, to);
                               System.out.println("To är satt till: " + lng.getName());
-                              controller.connectNodes(from, to, "Edge " + edgeCounter, 1);
+                              controller.connectNodes(from.getName(), to.getName(), "Edge " + edgeCounter, 1);
                               unsavedChanges = true;
                               from = null;
                               to = null;
@@ -218,6 +214,7 @@ public class Gui extends Application {
           }
           edgeCounter ++;
       });
+
       scene = new Scene(root, 640, 480);
 
       stage.setScene(scene);
@@ -230,7 +227,7 @@ public class Gui extends Application {
       public void handle(ActionEvent event) {
           if(confirm()) {
               canvas.getChildren().clear();
-              graph = new ListGraph<>();
+              controller.clear();
           }
       }
   }
@@ -316,6 +313,7 @@ public class Gui extends Application {
                          double y = Double.parseDouble(split[3]);
                          String berryAmount = split[4];
                          LocationNodeGui node = new LocationNodeGui(x, y, name, berryAmount);
+                         rightClick(node);
                          canvas.getChildren().add(node);
                          locationNodes.add(node);
                          controller.addNode(node.getName(), berryAmount);
@@ -373,7 +371,45 @@ public class Gui extends Application {
         backgroundView.setMouseTransparent(true);
         unsavedChanges = true;
     }
+    private void drawConnectionLine(LocationNodeGui from,LocationNodeGui to){
+        Line newLine = new javafx.scene.shape.Line();
+        newLine.startXProperty().bind(from.layoutXProperty().add(20));
+        newLine.startYProperty().bind(from.layoutYProperty().add(20));
 
+        newLine.endXProperty().bind(to.layoutXProperty().add(20));
+        newLine.endYProperty().bind(to.layoutYProperty().add(20));
+
+        canvas.getChildren().add(1, newLine);
+    }
+    private void rightClick(LocationNodeGui node){
+        ContextMenu menu = new ContextMenu();
+        MenuItem delete = new MenuItem("Delete");
+
+        delete.setOnAction(event -> {
+            Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+            alert.setContentText("Delete this location?");
+            Optional<ButtonType> result = alert.showAndWait();
+
+            if (result.isPresent() && result.get() == ButtonType.OK) {
+               controller.removeNode(node.getName());
+               canvas.getChildren().remove(node);
+               locationNodes.remove(node);
+               unsavedChanges = true;
+
+               event.consume();
+            }
+
+        });
+
+        menu.getItems().add(delete);
+
+        node.setOnMouseClicked(event -> {
+            if (event.getButton() == MouseButton.SECONDARY) {
+                menu.show(node, event.getScreenX(), event.getScreenY());
+                event.consume();
+            }
+        });
+    }
 
   public static void main(String[] args) {
     launch(args);
