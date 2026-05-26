@@ -30,7 +30,6 @@ public class Controller {
         } catch (Exception exception) {
             AlertHelper.showError(exception.getMessage());
         }
-
     }
 
     public Graph<Location> getGraph() {
