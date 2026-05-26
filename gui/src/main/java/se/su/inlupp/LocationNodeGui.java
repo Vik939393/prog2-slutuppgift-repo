@@ -48,27 +48,8 @@ public class LocationNodeGui extends Pane {
             }
         });
 
-        ContextMenu menu = new ContextMenu();
-        MenuItem delete = new MenuItem("Delete");
-
-        menu.getItems().add(delete);
-
-        setOnContextMenuRequested(event -> menu.show(this, event.getScreenX(), event.getScreenY())
-        );
-
-        delete.setOnAction(event -> {
-                Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-                alert.setContentText("Delete this location?");
-                Optional<ButtonType> result = alert.showAndWait();
-                if (result.isPresent() && result.get() == ButtonType.OK) {
-                    Pane parent = (Pane) getParent(); //För att kunna använda getChildren() måste den förstå att den är en Pane
-                    parent.getChildren().remove(this);
 
 
-                    event.consume();
-                }
-
-        });
 
 
     }

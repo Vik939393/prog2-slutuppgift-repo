@@ -178,6 +178,7 @@ public class Gui extends Application {
                       locationNodes.add(node);
                       unsavedChanges = true;
 
+
                       newEvent.consume();
                       locationAdded = false;
 
@@ -190,6 +191,12 @@ public class Gui extends Application {
               });
 
       connectLocations.setOnAction(event-> {
+          Alert alert = new Alert(Alert.AlertType.INFORMATION);
+          alert.setTitle("Instruction");
+          alert.setHeaderText(null);
+          alert.setContentText("click two locations to connect");
+          alert.showAndWait();
+
           for (Node n : canvas.getChildren()) {
               if(n instanceof LocationNodeGui lng) {
                   lng.setOnMouseClicked(newEvent -> {
