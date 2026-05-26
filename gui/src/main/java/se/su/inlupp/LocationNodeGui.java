@@ -39,13 +39,6 @@ public class LocationNodeGui extends Pane {
 
         });
 
-        ContextMenu menu = new ContextMenu();
-        MenuItem delete = new MenuItem("Delete");
-
-        menu.getItems().add(delete);
-
-        setOnContextMenuRequested(event -> menu.show(this, event.getScreenX(), event.getScreenY())
-        );
 
 
 
