@@ -10,8 +10,13 @@ public class Controller {
         graph.add(new Location(name, berryAmount));
     }
 
-    public void removeNode(Location location) {
-        graph.remove(location);
+    public void removeNode(String name) {
+        for (Location location : graph) {
+            if (location.getName().equals(name)) {
+                graph.remove(location);
+                return;
+            }
+        }
     }
     public void clear(){
         graph = new ListGraph<>();
@@ -29,6 +34,7 @@ public class Controller {
             }
         }
     }
+
 
     public ListGraph<Location> getGraph() {
         return graph;
