@@ -193,6 +193,11 @@ public class Gui extends Application {
           for (Node n : canvas.getChildren()) {
               if(n instanceof LocationNodeGui lng) {
                   lng.setOnMouseClicked(newEvent -> {
+                      if (lng.getWasDragged()) {
+                          lng.setWasDragged(false);
+                          newEvent.consume();
+                          return;
+                      }
                       if (newEvent.getButton() == MouseButton.PRIMARY) {
                           if (from == null) {
                               from = lng;
@@ -206,8 +211,12 @@ public class Gui extends Application {
                               from = null;
                               to = null;
                               newEvent.consume();
+                              for (Node node : canvas.getChildren()) {
+                                  if (node instanceof LocationNodeGui everyLng) {
+                                      everyLng.setOnMouseClicked(null);
+                                  }
+                              }
                           }
-
                       }
                   });
               }

@@ -12,9 +12,10 @@ import java.util.Optional;
 
 public class LocationNodeGui extends Pane {
     double startX, startY;
-    String name;
-    Circle circle;
+    private String name;
+    private Circle circle;
     private String berryAmount;
+    private boolean wasDragged;
 
     public LocationNodeGui(double x, double y, String name, String berryAmount) {
         this.name = name;
@@ -24,19 +25,27 @@ public class LocationNodeGui extends Pane {
         LocationType amount = LocationType.fromString(berryAmount);
         setColor(amount, circle);
         getChildren().add(circle);
-        setPrefSize(40, 40);
+        setPrefSize(30, 30);
 
         setOnMousePressed((event) -> {
-
             startX = event.getX();
             startY = event.getY();
+            event.consume();
         });
 
         setOnMouseDragged((event) -> {
+            wasDragged = true;
             double newX = getLayoutX() + event.getX() - startX;
             double newY = getLayoutY() + event.getY() - startY;
             relocate(newX, newY);
+            event.consume();
+        });
 
+        setOnMouseClicked(event -> {
+            if (wasDragged) {
+                wasDragged = false;
+                event.consume();
+            }
         });
 
         ContextMenu menu = new ContextMenu();
@@ -83,6 +92,14 @@ public class LocationNodeGui extends Pane {
             case BIG_AMOUNT_BERRIES -> c.setFill(Color.DARKRED);
         }
 
+    }
+
+    public boolean getWasDragged() {
+        return wasDragged;
+    }
+
+    public void setWasDragged(boolean wasDragged) {
+        this.wasDragged = wasDragged;
     }
 
 }
