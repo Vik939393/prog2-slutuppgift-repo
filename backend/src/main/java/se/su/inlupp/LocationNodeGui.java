@@ -18,13 +18,11 @@ public class LocationNodeGui extends Pane {
     double startX, startY;
     String name;
     Circle circle;
-<<<<<<< HEAD
-=======
-
->>>>>>> Vbranch
+    private String berryAmount;
 
     public LocationNodeGui(double x, double y, String name, String berryAmount) {
         this.name = name;
+        this.berryAmount = berryAmount;
         relocate(x, y);
         circle = new Circle(20, 20, 20);
         LocationType amount = LocationType.fromString(berryAmount);
@@ -60,6 +58,8 @@ public class LocationNodeGui extends Pane {
                 if (result.isPresent() && result.get() == ButtonType.OK) {
                     Pane parent = (Pane) getParent(); //För att kunna använda getChildren() måste den förstå att den är en Pane
                     parent.getChildren().remove(this);
+
+
                     event.consume();
                 }
 
@@ -72,12 +72,12 @@ public class LocationNodeGui extends Pane {
         return name;
     }
 
-    public String getName() {
-        return name;
-    }
-
     public Circle getCircle() {
         return circle;
+    }
+
+    public String getBerryAmount() {
+        return berryAmount;
     }
 
     public void setColor(LocationType type, Circle c) {
@@ -88,4 +88,5 @@ public class LocationNodeGui extends Pane {
         }
 
     }
+
 }

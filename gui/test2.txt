@@ -1,0 +1,3 @@
+IMAGE;file:/C:/Users/Adrian/Pictures/karta%20sthlm.jpg
+LOCATION;kkk;330.0;220.0;Medium amount of berries
+LOCATION;iii;330.0;153.0;Small amount of berries
