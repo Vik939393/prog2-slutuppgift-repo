@@ -339,9 +339,6 @@ public class Gui extends Application {
         return clicked.isPresent() && clicked.get().equals(ButtonType.OK);
     }
 
-
-
-
   public static void main(String[] args) {
     launch(args);
   }
