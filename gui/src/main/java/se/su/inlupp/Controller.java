@@ -1,8 +1,6 @@
 package se.su.inlupp;
 
 
-
-
 public class Controller {
     private Graph<Location> graph = new ListGraph<>();
 
@@ -18,19 +16,28 @@ public class Controller {
     }
 
     public void connectNodes(String start, String end, String name, int distance) {
-        for (Location s : graph) {
-            if (start.equals(s.getName())) {
-                for (Location e : graph) {
-                    if (end.equals(e.getName())) {
-                        graph.connect(s, e, name, distance);
-                        return;
-                    }
-                }
+        try {
+            Location s = findNode(start);
+            Location e = findNode(end);
+            if (s != null && e != null) {
+                graph.connect(s, e, name, distance);
             }
+        } catch (Exception exception) {
+            AlertHelper.showError(exception.getMessage());
         }
+
     }
 
     public Graph<Location> getGraph() {
         return graph;
+    }
+
+    private Location findNode(String name) {
+        for (Location l : graph) {
+            if (name.equals(l.getName())) {
+                return l;
+            }
+        }
+        return null;
     }
 }
