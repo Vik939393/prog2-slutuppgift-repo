@@ -4,15 +4,18 @@ package se.su.inlupp;
 public class Controller {
     private Graph<Location> graph = new ListGraph<>();
     private PathFinder<Location> pathFinder = new BFSPathFinder<>();
+    private boolean addWorks = false;
 
     public void addNode(String name, String berryAmount) {
         Location locationToBeAdded = new Location(name, berryAmount);
         for (Location l : graph.getNodes()) {
             if (locationToBeAdded.equals(l)) {
                 AlertHelper.showError("Two locations can not have the same name");
+                addWorks = false;
                 return;
             }
         }
+        addWorks = true;
         graph.add(locationToBeAdded);
 
     }
@@ -63,7 +66,15 @@ public class Controller {
         return pathFinder.findPath(graph, locationFrom, locationTo);
     }
 
+    public int calculatePathWeight(Path<Location> path) {
+        return path.getTotalWeight();
+    }
+
     public void setPathFinder(PathFinder<Location> pathFinder) {
         this.pathFinder = pathFinder;
+    }
+
+    public boolean getAddWorks() {
+        return addWorks;
     }
 }
