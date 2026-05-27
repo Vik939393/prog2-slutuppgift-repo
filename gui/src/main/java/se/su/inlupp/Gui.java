@@ -173,6 +173,7 @@ public class Gui extends Application {
 
                   if (locationAdded && newEvent.getTarget() == canvas && newEvent.getButton() == MouseButton.PRIMARY) {
 
+
                       double x = newEvent.getX();
                       double y = newEvent.getY();
                       controller.addNode(name, berryAmount);
@@ -215,9 +216,52 @@ public class Gui extends Application {
                               System.out.println("From är satt till: " + lng.getName());
                           } else {
                               to = lng;
+                              Dialog<ButtonType> connectionDialog = new Dialog();
+                              connectionDialog.setTitle("New connection");
+
+                              TextField nameField = new TextField();
+                              nameField.setPromptText("Name of new connection:");
+                              TextField weightField = new TextField();
+                              weightField.setPromptText("distance between locations :");
+
+                              VBox connectionD = new VBox(10);
+                              connectionD.getChildren().addAll(
+                                      new Label("Name: "), nameField,
+                                      new Label("Distance: "), weightField);
+                              connectionDialog.getDialogPane().setContent(connectionD);
+                              connectionDialog.getDialogPane().getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
+
+                              Optional<ButtonType> result = connectionDialog.showAndWait();
+
+                              if (result.isEmpty() || result.get() != ButtonType.OK) {
+                                  from = null;
+                                  to = null;
+                                  return;
+                              }
+
+                              String edgeName = nameField.getText().trim();
+                              String weightText = weightField.getText().trim();
+
+                              if (edgeName.isBlank() || weightText.isBlank()) {
+                                  from = null;
+                                  to = null;
+                                  return;
+                              }
+
+                              int weight;
+
+                              try {
+                                  weight = Integer.parseInt(weightText);
+                              } catch (NumberFormatException ex) {
+                                  from = null;
+                                  to = null;
+                                  return;
+                              }
+
+
                               drawConnectionLine(from, to);
                               System.out.println("To är satt till: " + lng.getName());
-                              controller.connectNodes(from.getName(), to.getName(), "Edge " + edgeCounter, 1);
+                              controller.connectNodes(from.getName(), to.getName(), nameField.toString(), Integer.parseInt(weightText));
                               unsavedChanges = true;
                               from = null;
                               to = null;
@@ -331,7 +375,11 @@ public class Gui extends Application {
                           node.getBerryAmount());
                   bw.newLine();
               }
+              for(Location l : controller.getGraph()) {
+                  for(Edge<Location> e : controller.getGraph().getEdgesFrom(l)){
 
+                  }
+              }
               bw.close();
               unsavedChanges = false;
 
@@ -481,6 +529,7 @@ public class Gui extends Application {
             }
         });
     }
+
 
   public static void main(String[] args) {
     launch(args);
