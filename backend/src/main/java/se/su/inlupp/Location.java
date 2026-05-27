@@ -1,5 +1,7 @@
 package se.su.inlupp;
 
+import java.util.Objects;
+
 public class Location {
     private String name;
     private LocationType type;
@@ -32,6 +34,19 @@ public class Location {
 
     public String toString() {
         return "Location: " + name + " - " + getType() + " Backend weight: " + weight + ".";
+    }
+
+    @Override
+    public boolean equals(Object other) {
+        if (other instanceof Location l) {
+            return l.getName().equals(name);
+        }
+        return false;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(name);
     }
     
     public static void main(String[] args) {

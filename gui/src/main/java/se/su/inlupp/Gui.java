@@ -21,9 +21,7 @@ import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 
 import java.io.*;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 
 public class Gui extends Application {
@@ -40,6 +38,9 @@ public class Gui extends Application {
     private boolean unsavedChanges;
     private LocationNodeGui from;
     private LocationNodeGui to;
+    private LocationNodeGui pathFrom;
+    private LocationNodeGui pathTo;
+    private Map<String, Line> connectionLines = new HashMap<>();
     private static int edgeCounter = 1;
     private List<LocationNodeGui> locationNodes = new ArrayList<>();
 
@@ -105,6 +106,8 @@ public class Gui extends Application {
       TextField textField = new TextField();
       Button enterButton = new Button("Enter");
       Label resultLabel = new Label();
+      Button clearPath = new Button("Clear this path");
+      clearPath.setVisible(false);
       //resultLabel.prefWidth(100);
       root.setBottom(resultLabel);
 
@@ -120,7 +123,8 @@ public class Gui extends Application {
 
       );
       bottomBar.getChildren().addAll(
-              resultLabel
+              resultLabel,
+              clearPath
 
       );
 
@@ -229,6 +233,53 @@ public class Gui extends Application {
               }
           }
           edgeCounter ++;
+      });
+
+      BFS.setOnAction(event -> {
+          //pathFrom = null;
+          //pathTo = null;
+          controller.setPathFinder(new BFSPathFinder<>());
+
+          for (Node node : canvas.getChildren()) {
+              if (node instanceof LocationNodeGui lng) {
+                  System.out.println("Sätter lyssnare på: " + lng.getName());
+                  lng.setOnMouseClicked(newEvent -> {
+                     if (pathFrom == null) {
+                         pathFrom = lng;
+                     } else {
+                         pathTo = lng;
+                         System.out.println("Söker väg från: " + pathFrom.getName() + " till: " + pathTo.getName());
+                         Path<Location> path = controller.findPath(pathFrom.getName(), pathTo.getName());
+                         System.out.println("Path: " + path);
+                         if (path == null) {
+                             AlertHelper.showError("No path found.");
+                         } else {
+                             clearPath.setVisible(true);
+                             Location current = path.getStart();
+                             for (Edge<Location> edge : path) {
+                                 String key = current.getName() + " - " + edge.getDestination().getName();
+                                 System.out.println("Letar efter nyckel: " + key + " - hittad: " + (connectionLines.get(key) != null));
+                                 Line line = connectionLines.get(key);
+                                 if (line != null) {
+                                     line.setStyle("-fx-stroke: red; -fx-stroke-width: 3;");
+                                 }
+                                 current = edge.getDestination();
+                             }
+                         }
+                         pathFrom = null;
+                         pathTo = null;
+                     }
+                  });
+              }
+          }
+      });
+
+      clearPath.setOnAction(event -> {
+          for (Line line : connectionLines.values()) {
+              line.setStyle("-fx-stroke: black; -fx-stroke-width: 1;");
+              clearPath.setVisible(false);
+          }
+
       });
 
       scene = new Scene(root, 640, 480);
@@ -387,6 +438,7 @@ public class Gui extends Application {
         backgroundView.setMouseTransparent(true);
         unsavedChanges = true;
     }
+
     private void drawConnectionLine(LocationNodeGui from,LocationNodeGui to){
         Line newLine = new javafx.scene.shape.Line();
         newLine.startXProperty().bind(from.layoutXProperty().add(20));
@@ -395,8 +447,11 @@ public class Gui extends Application {
         newLine.endXProperty().bind(to.layoutXProperty().add(20));
         newLine.endYProperty().bind(to.layoutYProperty().add(20));
 
+        connectionLines.put(from.getName() + " - " + to.getName(), newLine);
+        connectionLines.put(to.getName() + " - " + from.getName(), newLine);
         canvas.getChildren().add(1, newLine);
     }
+
     private void rightClick(LocationNodeGui node){
         ContextMenu menu = new ContextMenu();
         MenuItem delete = new MenuItem("Delete");

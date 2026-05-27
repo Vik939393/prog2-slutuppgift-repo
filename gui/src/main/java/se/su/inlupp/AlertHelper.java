@@ -9,4 +9,6 @@ public class AlertHelper {
         alert.setContentText(exception);
         alert.showAndWait();
     }
+
+
 }

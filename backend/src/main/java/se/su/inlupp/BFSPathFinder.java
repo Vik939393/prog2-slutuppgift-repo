@@ -26,7 +26,6 @@ public class BFSPathFinder<T> implements PathFinder<T> {
       }
     }
 
-
     List<Edge<T>> path = new LinkedList<>();
 
     if (connections.containsKey(to)) {
@@ -43,5 +42,4 @@ public class BFSPathFinder<T> implements PathFinder<T> {
       return null;
 
   }
-
 }
