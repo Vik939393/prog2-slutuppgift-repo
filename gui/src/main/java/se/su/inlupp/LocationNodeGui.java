@@ -47,11 +47,6 @@ public class LocationNodeGui extends Pane {
                 event.consume();
             }
         });
-
-
-
-
-
     }
 
     public String getName() {

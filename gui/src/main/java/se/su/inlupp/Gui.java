@@ -43,6 +43,7 @@ public class Gui extends Application {
     private Map<String, Line> connectionLines = new HashMap<>();
     private static int edgeCounter = 1;
     private List<LocationNodeGui> locationNodes = new ArrayList<>();
+    private Label resultLabel = new Label();
 
 
 
@@ -106,7 +107,7 @@ public class Gui extends Application {
 
       TextField textField = new TextField();
       Button enterButton = new Button("Enter");
-      Label resultLabel = new Label("Distance is: ");
+      Label resultLabel = new Label();
       Button clearPath = new Button("Clear this path");
       clearPath.setVisible(false);
       //resultLabel.prefWidth(100);
@@ -167,33 +168,33 @@ public class Gui extends Application {
           Optional<ButtonType> result = createNode.showAndWait();
           if(result.isPresent() && result.get() == ButtonType.OK){
 
-              String name = nameField.getText();
-              String berryAmount = chooseBerryAmount.getValue();
+              try {
+                  String name = InputValidator.validateString(nameField.getText());
+                  String berryAmount = InputValidator.validateString(chooseBerryAmount.getValue());
 
-              canvas.setOnMouseClicked((newEvent) -> {
+                  canvas.setOnMouseClicked((newEvent) -> {
 
-                  if (locationAdded && newEvent.getTarget() == canvas && newEvent.getButton() == MouseButton.PRIMARY) {
+                      if (locationAdded && newEvent.getTarget() == canvas && newEvent.getButton() == MouseButton.PRIMARY) {
+                          double x = newEvent.getX();
+                          double y = newEvent.getY();
+                          boolean nodeAdded = false;
+                          controller.addNode(name, berryAmount);
+                          if (controller.getAddWorks()) {
+                              LocationNodeGui node = new LocationNodeGui(x,y,name,berryAmount);
+                              rightClick(node);
+                              canvas.getChildren().add(node);
+                              locationNodes.add(node);
+                              unsavedChanges = true;
+                          }
+                          newEvent.consume();
+                          locationAdded = false;
+                      }
+                  });
+              } catch (Exception e) {
+                  AlertHelper.showError(e.getMessage());
+              }
 
-
-                      double x = newEvent.getX();
-                      double y = newEvent.getY();
-                      controller.addNode(name, berryAmount);
-                      LocationNodeGui node = new LocationNodeGui(x,y,name,berryAmount);
-                      rightClick(node);
-                      canvas.getChildren().add(node);
-                      locationNodes.add(node);
-                      unsavedChanges = true;
-
-
-                      newEvent.consume();
-                      locationAdded = false;
-
-                  }
-
-              });
           }
-
-
               });
 
       connectLocations.setOnAction(event-> {
@@ -240,30 +241,17 @@ public class Gui extends Application {
                                   return;
                               }
 
-                              String edgeName = nameField.getText().trim();
-                              String weightText = weightField.getText().trim();
-
-                              if (edgeName.isBlank() || weightText.isBlank()) {
-                                  from = null;
-                                  to = null;
-                                  return;
-                              }
-
-                              int weight;
-
                               try {
-                                  weight = Integer.parseInt(weightText);
-                              } catch (NumberFormatException ex) {
-                                  from = null;
-                                  to = null;
-                                  return;
+                                  String edgeName = InputValidator.validateString(nameField.getText());
+                                  String weightText = weightField.getText();
+                                  InputValidator.validateInt(weightText);
+                                  drawConnectionLine(from, to);
+                                  controller.connectNodes(from.getName(), to.getName(), nameField.getText(), Integer.parseInt(weightText));
+                                  unsavedChanges = true;
+                              } catch (Exception e) {
+                                  AlertHelper.showError(e.getMessage());
                               }
 
-
-                              drawConnectionLine(from, to);
-                              System.out.println("To är satt till: " + lng.getName());
-                              controller.connectNodes(from.getName(), to.getName(), nameField.getText(), Integer.parseInt(weightText));
-                              unsavedChanges = true;
                               from = null;
                               to = null;
                               newEvent.consume();
@@ -277,46 +265,13 @@ public class Gui extends Application {
                   });
               }
           }
-          edgeCounter ++;
       });
 
       BFS.setOnAction(event -> {
-          //pathFrom = null;
-          //pathTo = null;
-          controller.setPathFinder(new BFSPathFinder<>());
-
-          for (Node node : canvas.getChildren()) {
-              if (node instanceof LocationNodeGui lng) {
-                  System.out.println("Sätter lyssnare på: " + lng.getName());
-                  lng.setOnMouseClicked(newEvent -> {
-                     if (pathFrom == null) {
-                         pathFrom = lng;
-                     } else {
-                         pathTo = lng;
-                         System.out.println("Söker väg från: " + pathFrom.getName() + " till: " + pathTo.getName());
-                         Path<Location> path = controller.findPath(pathFrom.getName(), pathTo.getName());
-                         System.out.println("Path: " + path);
-                         if (path == null) {
-                             AlertHelper.showError("No path found.");
-                         } else {
-                             clearPath.setVisible(true);
-                             Location current = path.getStart();
-                             for (Edge<Location> edge : path) {
-                                 String key = current.getName() + " - " + edge.getDestination().getName();
-                                 System.out.println("Letar efter nyckel: " + key + " - hittad: " + (connectionLines.get(key) != null));
-                                 Line line = connectionLines.get(key);
-                                 if (line != null) {
-                                     line.setStyle("-fx-stroke: red; -fx-stroke-width: 3;");
-                                 }
-                                 current = edge.getDestination();
-                             }
-                         }
-                         pathFrom = null;
-                         pathTo = null;
-                     }
-                  });
-              }
-          }
+          findAndShowPath(new BFSPathFinder<>(), clearPath);
+      });
+      DFS.setOnAction(event -> {
+          findAndShowPath(new DFSPathFinder<>(), clearPath);
       });
 
       clearPath.setOnAction(event -> {
@@ -569,6 +524,44 @@ public class Gui extends Application {
                 event.consume();
             }
         });
+    }
+
+    private void findAndShowPath(PathFinder<Location> pathFinder, Button clearPath) {
+        pathFrom = null;
+        pathTo = null;
+        controller.setPathFinder(pathFinder);
+
+        for (Node node : canvas.getChildren()) {
+            if (node instanceof LocationNodeGui lng) {
+                lng.setOnMouseClicked(newEvent -> {
+                    if (pathFrom == null) {
+                        pathFrom = lng;
+                    } else {
+                        pathTo = lng;
+                        Path<Location> path = controller.findPath(pathFrom.getName(), pathTo.getName());
+                        if (path == null) {
+                            AlertHelper.showError("No path found.");
+                        } else {
+                            clearPath.setVisible(true);
+                            resultLabel.setText("Path found! Total weight: " + controller.calculatePathWeight(path));
+                            Location current = path.getStart();
+                            for (Edge<Location> edge : path) {
+                                String key = current.getName() + " - " + edge.getDestination().getName();
+                                Line line = connectionLines.get(key);
+                                if (line != null) {
+                                    line.setStyle("-fx-stroke: red; -fx-stroke-width: 3;");
+                                }
+                                current = edge.getDestination();
+                            }
+                        }
+                        pathFrom = null;
+                        pathTo = null;
+                    }
+                });
+            }
+        }
+
+
     }
 
 

@@ -7,6 +7,7 @@ public class InputValidator {
     public static String validateString(String input) {
         if (input == null || input.isBlank()) {
             throw new IllegalArgumentException("Input can not be blank.");
+
         }
         return input.trim();
     }
