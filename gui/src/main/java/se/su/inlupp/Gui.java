@@ -45,6 +45,7 @@ public class Gui extends Application {
     private List<LocationNodeGui> locationNodes = new ArrayList<>();
 
 
+
   public void start(Stage stage) {
       this.stage = stage;
       stage.setTitle("BERRYS AND SHROOOOMS");
@@ -105,7 +106,7 @@ public class Gui extends Application {
 
       TextField textField = new TextField();
       Button enterButton = new Button("Enter");
-      Label resultLabel = new Label();
+      Label resultLabel = new Label("Distance is: ");
       Button clearPath = new Button("Clear this path");
       clearPath.setVisible(false);
       //resultLabel.prefWidth(100);
@@ -261,7 +262,7 @@ public class Gui extends Application {
 
                               drawConnectionLine(from, to);
                               System.out.println("To är satt till: " + lng.getName());
-                              controller.connectNodes(from.getName(), to.getName(), nameField.toString(), Integer.parseInt(weightText));
+                              controller.connectNodes(from.getName(), to.getName(), nameField.getText(), Integer.parseInt(weightText));
                               unsavedChanges = true;
                               from = null;
                               to = null;
@@ -361,6 +362,7 @@ public class Gui extends Application {
 
       @Override
       public void handle(ActionEvent event) {
+          fileChooser.setInitialDirectory(new File("."));
           File saveFile = fileChooser.showSaveDialog(stage);
           if(saveFile==null)
               return;
@@ -371,12 +373,23 @@ public class Gui extends Application {
               bw.write("IMAGE;" + currentImagePath);
               bw.newLine();
               for(LocationNodeGui node : locationNodes){
-                  bw.write("LOCATION;" + node.getName()+";"+node.getLayoutX() +";" + node.getLayoutY() +";" +
+                  bw.write("LOCATION;" +
+                          node.getName()+";" +
+                          node.getLayoutX() +";" +
+                          node.getLayoutY() +";" +
                           node.getBerryAmount());
                   bw.newLine();
               }
               for(Location l : controller.getGraph()) {
                   for(Edge<Location> e : controller.getGraph().getEdgesFrom(l)){
+                      if(l.getName().compareTo(e.getDestination().getName()) < 0) {
+                          bw.write("EDGE;" +
+                                  l.getName() + ";" +
+                                  e.getDestination().getName() + ";" +
+                                  e.getName() + ";" +
+                                  e.getWeight());
+                          bw.newLine();
+                      }
 
                   }
               }
@@ -433,8 +446,36 @@ public class Gui extends Application {
                          locationNodes.add(node);
                          controller.addNode(node.getName(), berryAmount);
 
+                     }else if(split[0].equals("EDGE")) {
+                         String fromName = split[1];
+                         String toName = split[2];
+                         String edgeName = split[3];
+                         int weight = Integer.parseInt(split[4]);
+
+                         LocationNodeGui fromNode = null;
+                         LocationNodeGui toNode = null;
+
+                         for (LocationNodeGui l : locationNodes) {
+                             if (l.getName().equals(fromName)) {
+                                 fromNode = l;
+                             }
+                             if (l.getName().equals(toName)) {
+                                 toNode = l;
+                             }
+                         }
+                             if(fromNode != null && toNode != null) {
+
+
+                                 drawConnectionLine(fromNode, toNode);
+                                 controller.connectNodes(fromNode.getName(), toNode.getName(), edgeName, weight);
+                                 from = null;
+                                 to = null;
+
+                             }
+
+
+                         }
                      }
-                  }
 
 
               reader.close();
