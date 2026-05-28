@@ -264,12 +264,13 @@ public class Gui extends Application {
               }
           }
       });
-
+      BFSPathFinder<Location> BFSImplementation = new BFSPathFinder<>();
       BFS.setOnAction(event -> {
-          findAndShowPath(new BFSPathFinder<>(), clearPath);
+          findAndShowPath(BFSImplementation, clearPath);
       });
+      DFSPathFinder<Location> DFSImplementation = new DFSPathFinder<>();
       DFS.setOnAction(event -> {
-          findAndShowPath(new DFSPathFinder<>(), clearPath);
+          findAndShowPath(DFSImplementation, clearPath);
       });
 
       clearPath.setOnAction(event -> {
@@ -518,8 +519,6 @@ public class Gui extends Application {
                 });
             }
         }
-
-
     }
 
 

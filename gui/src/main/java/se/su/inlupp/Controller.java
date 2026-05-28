@@ -3,7 +3,7 @@ package se.su.inlupp;
 
 public class Controller {
     private Graph<Location> graph = new ListGraph<>();
-    private PathFinder<Location> pathFinder = new BFSPathFinder<>();
+    private PathFinder<Location> pathFinder;
     private boolean addWorks = false;
 
     public void addNode(String name, String berryAmount) {
