@@ -546,8 +546,18 @@ public class Gui extends Application {
                             resultLabel.setText("Path found! Total weight: " + controller.calculatePathWeight(path));
                             Location current = path.getStart();
                             for (Edge<Location> edge : path) {
-                                String key = current.getName() + " - " + edge.getDestination().getName();
-                                Line line = connectionLines.get(key);
+                                String key1 = current.getName() + " - " + edge.getDestination().getName();
+                                String key2 = edge.getDestination().getName() + " - " + current.getName();
+
+                                Line line = connectionLines.get(key1);
+
+                                if (line == null) {
+                                    line = connectionLines.get(key2);
+                                }
+
+                                if (line != null) {
+                                    line.setStyle("-fx-stroke: red; -fx-stroke-width: 3;");
+                                }
                                 if (line != null) {
                                     line.setStyle("-fx-stroke: red; -fx-stroke-width: 3;");
                                 }
