@@ -107,7 +107,6 @@ public class Gui extends Application {
 
       TextField textField = new TextField();
       Button enterButton = new Button("Enter");
-      Label resultLabel = new Label();
       Button clearPath = new Button("Clear this path");
       clearPath.setVisible(false);
       //resultLabel.prefWidth(100);
@@ -269,15 +268,18 @@ public class Gui extends Application {
 
       BFS.setOnAction(event -> {
           findAndShowPath(new BFSPathFinder<>(), clearPath);
+          resultLabel.setText(null);
       });
       DFS.setOnAction(event -> {
           findAndShowPath(new DFSPathFinder<>(), clearPath);
+          resultLabel.setText(null);
       });
 
       clearPath.setOnAction(event -> {
           for (Line line : connectionLines.values()) {
               line.setStyle("-fx-stroke: black; -fx-stroke-width: 1;");
               clearPath.setVisible(false);
+              resultLabel.setText(null);
           }
 
       });
@@ -553,10 +555,6 @@ public class Gui extends Application {
 
                                 if (line == null) {
                                     line = connectionLines.get(key2);
-                                }
-
-                                if (line != null) {
-                                    line.setStyle("-fx-stroke: red; -fx-stroke-width: 3;");
                                 }
                                 if (line != null) {
                                     line.setStyle("-fx-stroke: red; -fx-stroke-width: 3;");
