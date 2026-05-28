@@ -19,7 +19,6 @@ import javafx.scene.shape.Line;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
-
 import java.io.*;
 import java.util.*;
 
@@ -238,6 +237,7 @@ public class Gui extends Application {
                                     InputValidator.validateInt(weightText);
                                     drawConnectionLine(from, to);
                                     controller.connectNodes(from.getName(), to.getName(), nameField.getText(), Integer.parseInt(weightText));
+
                                     unsavedChanges = true;
                                 } catch (Exception e) {
                                     AlertHelper.showError(e.getMessage());
@@ -543,6 +543,7 @@ public class Gui extends Application {
                             clearPath.setVisible(true);
                             resultLabel.setText("Path found! Total weight: " + controller.calculatePathWeight(path));
                             Location current = path.getStart();
+
                             for (Edge<Location> edge : path) {
                                 String key1 = current.getName() + " - " + edge.getDestination().getName();
                                 String key2 = edge.getDestination().getName() + " - " + current.getName();
