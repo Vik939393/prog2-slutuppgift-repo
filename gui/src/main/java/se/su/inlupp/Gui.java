@@ -213,9 +213,9 @@ public class Gui extends Application {
                                 connectionDialog.setTitle("New connection");
 
                                 TextField nameField = new TextField();
-                                nameField.setPromptText("Name of new connection:");
+                                nameField.setPromptText("Name of new connection: ");
                                 TextField weightField = new TextField();
-                                weightField.setPromptText("distance between locations :");
+                                weightField.setPromptText("distance between locations: ");
 
                                 VBox connectionD = new VBox(10);
                                 connectionD.getChildren().addAll(
