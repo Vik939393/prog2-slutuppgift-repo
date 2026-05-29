@@ -506,6 +506,20 @@ public class Gui extends Application {
             if (result.isPresent() && result.get() == ButtonType.OK) {
                 controller.removeNode(node.getName());
                 canvas.getChildren().remove(node);
+                List<String> keysToRemove = new ArrayList<>();
+                for(String key : connectionLines.keySet()){
+                    if(key.startsWith(node.getName() +" - ") || key.endsWith(" - " + node.getName())){
+                        Line line = connectionLines.get(key);
+                        canvas.getChildren().remove(line);
+                        keysToRemove.add(key);
+
+
+                    }
+
+                }
+                for(String key : keysToRemove){
+                    connectionLines.remove(key);
+                }
                 locationNodes.remove(node);
                 unsavedChanges = true;
 
@@ -516,11 +530,10 @@ public class Gui extends Application {
 
         menu.getItems().add(delete);
 
-        node.setOnMouseClicked(event -> {
-            if (event.getButton() == MouseButton.SECONDARY) {
+        node.setOnContextMenuRequested(event -> {
                 menu.show(node, event.getScreenX(), event.getScreenY());
                 event.consume();
-            }
+
         });
     }
 
