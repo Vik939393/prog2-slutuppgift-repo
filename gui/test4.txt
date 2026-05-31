@@ -1,3 +1,0 @@
-IMAGE;file:/C:/Users/Adrian/Pictures/karta%20sthlm.jpg
-LOCATION;koko;382.66666666666663;148.66666666666669;Large amount of berries
-LOCATION;kiki;146.6666666666666;158.0;Small amount of berries

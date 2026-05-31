@@ -1,14 +1,12 @@
-package se.su.inlupp;
+// PROG2 VT2026, Inlämningsuppgift, del 1
+// Grupp 153
+// Viktor Spasov visp9819
+// Adrian Nötzel adno3118
 
-import javafx.scene.control.Alert;
-import javafx.scene.control.ButtonType;
-import javafx.scene.control.ContextMenu;
-import javafx.scene.control.MenuItem;
+package se.su.inlupp;
 import javafx.scene.layout.Pane;
 import javafx.scene.shape.Circle;
 import javafx.scene.paint.Color;
-
-import java.util.Optional;
 
 public class LocationNodeGui extends Pane {
     double startX, startY;

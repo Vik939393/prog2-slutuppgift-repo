@@ -1,5 +1,9 @@
-package se.su.inlupp;
+// PROG2 VT2026, Inlämningsuppgift, del 1
+// Grupp 153
+// Viktor Spasov visp9819
+// Adrian Nötzel adno3118
 
+package se.su.inlupp;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;

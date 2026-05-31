@@ -1,3 +1,8 @@
+// PROG2 VT2026, Inlämningsuppgift, del 1
+// Grupp 153
+// Viktor Spasov visp9819
+// Adrian Nötzel adno3118
+
 package se.su.inlupp;
 
 import javafx.application.Application;
@@ -10,7 +15,6 @@ import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseButton;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
