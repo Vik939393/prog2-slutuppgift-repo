@@ -1,0 +1,11 @@
+IMAGE;null
+LOCATION;kalle;334.0;146.0;Medium amount of berries
+LOCATION;balle;96.0;142.0;Large amount of berries
+LOCATION;nalle;227.0;145.0;Small amount of berries
+LOCATION;d;492.0;149.0;Large amount of berries
+LOCATION;f;142.0;300.0;Medium amount of berries
+EDGE;d;kalle;road;11
+EDGE;d;f;rrr;8
+EDGE;balle;nalle;stig;10
+EDGE;balle;f;hh;66
+EDGE;kalle;nalle;väg;55

@@ -313,6 +313,7 @@ public class Gui extends Application {
         @Override
         public void handle(ActionEvent event) {
             fileChooser.setInitialDirectory(new File("."));
+            fileChooser.setInitialFileName("graph.txt");
             File saveFile = fileChooser.showSaveDialog(stage);
             if (saveFile == null)
                 return;
@@ -371,6 +372,7 @@ public class Gui extends Application {
                 BufferedReader reader = new BufferedReader(fileReader);
                 canvas.getChildren().clear();
                 locationNodes.clear();
+                connectionLines.clear();
                 controller.clear();
                 String line;
                 while (((line = reader.readLine()) != null)) {
